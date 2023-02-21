@@ -519,8 +519,8 @@ const puncture_func puncture_funcs[256] = {
     &puncture_11111111
 };
 
-// Puncture and condense example of 1024 bits in O(n)
-// ==================================================
+// Puncture and condense example of 1024 bits in O(n*logn)
+// =======================================================
 // 1024 / 8 = 128 bytes = 64x16b words = 32x32b dwords = 16x64b = 8x128b = 4x256b = 2x512b
 // 
 // 128x8b:
