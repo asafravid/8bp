@@ -4,9 +4,9 @@
 #include <iostream>
 
 typedef unsigned char      u8;  // 8b
-typedef unsigned short     u16;  // 16b
-typedef unsigned int       dword; // 32b
-typedef unsigned long long u64;   // 64b
+typedef unsigned short     u16; // 16b
+typedef unsigned int       u32; // 32b
+typedef unsigned long long u64; // 64b
 
 typedef u8 (*puncture_func)(u8 input);
 
@@ -795,6 +795,18 @@ void print_as_words(u16* data, u16 data_len, const char* name, bool reverse) {
     std::cout << std::endl << std::endl;
 }
 
+void print_as_dwords(u32* data, u16 data_len, const char* name, bool reverse) {
+    std::cout << name << " As Hex u32 " << (reverse ? "reverse" : "") << ": \n\n";
+
+    if (reverse)
+        for (data_len; data_len > 0; data_len--)
+            printf("%08x ", data[data_len - 1]);
+    else
+        for (u16 i = 0; i < data_len; i++)
+            printf("%08x ", data[i]);
+    std::cout << std::endl << std::endl;
+}
+
 u16 condense_even_byte_pairs(u8* data, u16* p_bytes, u16 num_punctured_bytes, u8* p_bytes_num_puncs, u16* p_words, u8* p_words_num_puncs) {
     u16 punctured_byte_index = 0;    
     u16 num_punctured_words = 0;
@@ -837,6 +849,49 @@ u16 condense_even_byte_pairs(u8* data, u16* p_bytes, u16 num_punctured_bytes, u8
     return num_punctured_words;
 }
 
+u16 condense_even_word_pairs(u16* data, u16* p_words, u16 num_punctured_words, u8* p_words_num_puncs, u16* p_dwords, u8* p_dwords_num_puncs) {
+    u16 punctured_word_index = 0;
+    u16 num_punctured_dwords = 0;
+
+    // Work in even index pairs: if punctured u8 index in data is even, 
+    // look at this u8 (punctured) and next u8 (might be punctured)
+    while (punctured_word_index < num_punctured_words) {
+        u16 word_index_in_data = p_words[punctured_word_index];
+        u16 dword_index_in_data = word_index_in_data >> 1;
+        u16 num_curr_word_puncs = p_words_num_puncs[punctured_word_index];
+        u16 num_next_word_puncs;
+
+        if ((word_index_in_data & 0x1) == 0) {
+            num_next_word_puncs =
+                (word_index_in_data + 1 == p_words[punctured_word_index + 1]) ? p_words_num_puncs[punctured_word_index + 1] : 0; // next u16 in data contains punctures?
+
+            // Condense u16 pair:
+            data[word_index_in_data] |=
+                ((data[word_index_in_data + 1] & ((1 << num_curr_word_puncs) - 1)) << (16 - num_curr_word_puncs));
+            data[word_index_in_data + 1] >>= num_curr_word_puncs;
+
+            if (num_next_word_puncs) { // there were punctures in next u16
+                p_words_num_puncs[punctured_word_index + 1] += num_curr_word_puncs;
+                p_words_num_puncs[punctured_word_index] = 0; // All punctures reflected in next u16
+                punctured_word_index += 2;
+            }
+            else {
+                punctured_word_index++;
+            }
+        }
+        else {
+            punctured_word_index++;
+            num_next_word_puncs = 0;
+        }
+
+        p_dwords_num_puncs[num_punctured_dwords] = num_curr_word_puncs + num_next_word_puncs;
+        p_dwords[num_punctured_dwords] = dword_index_in_data;
+        num_punctured_dwords++;
+    }
+    return num_punctured_dwords;
+}
+
+
 int main(int argc, char** argv)
 {
     #define INPUT_SIZE_BITS  1500
@@ -851,13 +906,15 @@ int main(int argc, char** argv)
     //                           0 1 2  3   4   5  6  7  8   9 10   11  12   13   14   15   16   17 
     const u16 p_bits[P_SIZE] = { 1,2,4, 8, 30, 33,34,35,37, 50,51, 128,129, 140, 150, 160, 170, 200 };
 
-    u16 p_bytes[P_SIZE] = { 0 };                     // bytes corresponding to p_bits
+    u16 p_bytes[P_SIZE] = { 0 };          // bytes corresponding to p_bits
     u8 p_bytes_punctures[P_SIZE] = { 0 }; // puncturing mask per u8 (1: puncture, 0: no puncture)
     u8 p_bytes_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per u8
 
-    u16 p_words[P_SIZE] = { 0 };                     // bytes corresponding to p_bits
-    u8 p_words_punctures[P_SIZE] = { 0 }; // puncturing mask per u8 (1: puncture, 0: no puncture)
-    u8 p_words_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per u8
+    u16 p_words[P_SIZE] = { 0 };          // words corresponding to p_bits
+    u8 p_words_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per u16
+    
+    u16 p_dwords[P_SIZE] = { 0 };          // dwords corresponding to p_bits
+    u8 p_dwords_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per u32
 
     build_data(data, INPUT_SIZE_BYTES); // Fill the input data (with all ones)
     
@@ -874,11 +931,20 @@ int main(int argc, char** argv)
 
     u16 num_punctured_words = condense_even_byte_pairs(data, p_bytes, num_punctured_bytes, p_bytes_num_puncs, p_words, p_words_num_puncs); // Condense according to example above
 
-    print_as_bytes(data, INPUT_SIZE_BYTES, "data after condense_even_byte_pairs()", true);
+    print_as_bytes(data, INPUT_SIZE_BYTES, "data bytes after condense_even_byte_pairs()", true);
     print_as_bytes(p_bytes_num_puncs, num_punctured_bytes, "p_bytes_num_puncs after condense_even_byte_pairs()", true);
 
     print_as_words(p_words, num_punctured_words, "p_words after condense_even_byte_pairs()", true);
     print_as_bytes(p_words_num_puncs, num_punctured_words, "p_words_num_puncs after condense_even_byte_pairs()", true);
+
+    u16 num_punctured_dwords = condense_even_word_pairs((u16*)data, p_words, num_punctured_words, p_words_num_puncs, p_dwords, p_dwords_num_puncs); // Condense according to example above
+
+    print_as_words((u16*)data, INPUT_SIZE_BYTES>>1, "data words after condense_even_word_pairs()", true);
+    print_as_bytes(p_words_num_puncs, num_punctured_words, "p_words_num_puncs after condense_even_word_pairs()", true);
+
+    print_as_words(p_dwords, num_punctured_dwords, "p_dwords after condense_even_word_pairs()", true);
+    print_as_bytes(p_dwords_num_puncs, num_punctured_dwords, "p_dwords_num_puncs after condense_even_word_pairs()", true);
+
 
     _aligned_free(data);
 }
