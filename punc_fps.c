@@ -1,10 +1,14 @@
+// This file contains the 'main' function. Program execution begins and ends there.
+//
+
+#include <iostream>
 
 typedef unsigned char (*puncture_func)(unsigned char input);
 
-inline unsigned char puncture_00000000(unsigned char input) { return input;  }
-inline unsigned char puncture_00000001(unsigned char input) { return input>>1;  }
+inline unsigned char puncture_00000000(unsigned char input) { return (input   ); }
+inline unsigned char puncture_00000001(unsigned char input) { return (input>>1);  }
 inline unsigned char puncture_00000010(unsigned char input) { return ((input & 0xfc) >> 1) | (input & 0x1);  }
-inline unsigned char puncture_00000011(unsigned char input) { return input>>2;  }
+inline unsigned char puncture_00000011(unsigned char input) { return (input>>2);  }
 inline unsigned char puncture_00000100(unsigned char input) { return ((input & 0xf8) >> 1) | (input & 0x3); }
 inline unsigned char puncture_00000101(unsigned char input) { return (input >> 1) | puncture_00000010(input >> 1); }
 inline unsigned char puncture_00000110(unsigned char input) { return (input & 0x1) | ((input & 0xf8) >> 2);  }
@@ -16,7 +20,7 @@ inline unsigned char puncture_00001011(unsigned char input) { return (input>>2) 
 inline unsigned char puncture_00001100(unsigned char input) { return (input & 0x3) | ((input & 0xf0) >> 2); }
 inline unsigned char puncture_00001101(unsigned char input) { return (input >> 1) | puncture_00000110(input >> 1);}
 inline unsigned char puncture_00001110(unsigned char input) { return (input & 0x1) | ((input & 0xf0) >> 3);  }
-inline unsigned char puncture_00001111(unsigned char input) { return input>>4;  }
+inline unsigned char puncture_00001111(unsigned char input) { return (input>>4);  }
 inline unsigned char puncture_00010000(unsigned char input) { return ((input & 0xe0) >> 1) | (input & 0xf); }
 inline unsigned char puncture_00010001(unsigned char input) { return (input >> 1) | puncture_00001000(input >> 1); }
 inline unsigned char puncture_00010010(unsigned char input) { return (input & 0x1) | ((input & 0xc)>>1) | ((input & 0xe0) >> 2);  }
@@ -32,7 +36,7 @@ inline unsigned char puncture_00011011(unsigned char input) { return (input >> 2
 inline unsigned char puncture_00011100(unsigned char input) { return (input & 0x3) | ((input & 0xe0) >> 3); }
 inline unsigned char puncture_00011101(unsigned char input) { return (input >> 1) | puncture_00001110(input >> 1); }
 inline unsigned char puncture_00011110(unsigned char input) { return (input & 0x1) | ((input & 0xe0) >> 4);  }
-inline unsigned char puncture_00011111(unsigned char input) { return input>>5;  }
+inline unsigned char puncture_00011111(unsigned char input) { return (input>>5);  }
 inline unsigned char puncture_00100000(unsigned char input) { return ((input & 0xc0) >> 1) | (input & 0x1f); }
 inline unsigned char puncture_00100001(unsigned char input) { return (input >> 1) | puncture_00010000(input >> 1); }
 inline unsigned char puncture_00100010(unsigned char input) { return (input & 0x1) | ((input & 0x1c)>>1) | ((input & 0xc0) >> 2);  }
@@ -64,7 +68,7 @@ inline unsigned char puncture_00111011(unsigned char input) { return (input >> 2
 inline unsigned char puncture_00111100(unsigned char input) { return (input & 0x3) | ((input & 0xc0) >> 4); }
 inline unsigned char puncture_00111101(unsigned char input) { return (input >> 1) | puncture_00011110(input >> 1); }
 inline unsigned char puncture_00111110(unsigned char input) { return (input & 0x1) | ((input & 0xc0) >> 5); }
-inline unsigned char puncture_00111111(unsigned char input) { return input>>6;  }
+inline unsigned char puncture_00111111(unsigned char input) { return (input>>6);  }
 inline unsigned char puncture_01000000(unsigned char input) { return ((input & 0x80) >> 1) | (input & 0x3f); }
 inline unsigned char puncture_01000001(unsigned char input) { return (input >> 1) | puncture_00100000(input >> 1); }
 inline unsigned char puncture_01000010(unsigned char input) { return (input & 0x1) | ((input & 0x3c) >> 1) | ((input & 0x80) >> 2); }
@@ -128,8 +132,8 @@ inline unsigned char puncture_01111011(unsigned char input) { return (input >> 2
 inline unsigned char puncture_01111100(unsigned char input) { return (input & 0x3) | ((input & 0x80) >> 5); }
 inline unsigned char puncture_01111101(unsigned char input) { return (input >> 1) | puncture_00111110(input >> 1); }
 inline unsigned char puncture_01111110(unsigned char input) { return (input & 0x1) | ((input & 0x80) >> 6); }
-inline unsigned char puncture_01111111(unsigned char input) { return input>>7;  }
-inline unsigned char puncture_10000000(unsigned char input) { return input & 0x7f;  }
+inline unsigned char puncture_01111111(unsigned char input) { return (input>>7);  }
+inline unsigned char puncture_10000000(unsigned char input) { return (input & 0x7f);  }
 inline unsigned char puncture_10000001(unsigned char input) { return (input >> 1) | puncture_01000000(input >> 1); }
 inline unsigned char puncture_10000010(unsigned char input) { return (input & 0x1) | ((input & 0x7c) >> 1); }
 inline unsigned char puncture_10000011(unsigned char input) { return (input >> 2) | puncture_00100000(input >> 2); }
@@ -193,7 +197,7 @@ inline unsigned char puncture_10111100(unsigned char input) { return (input & 0x
 inline unsigned char puncture_10111101(unsigned char input) { return (input >> 1) | puncture_01011110(input >> 1); }
 inline unsigned char puncture_10111110(unsigned char input) { return (input & 0x1) | ((input & 0x40) >> 5); }
 inline unsigned char puncture_10111111(unsigned char input) { return (input >> 6) | puncture_00000010(input >> 6); }
-inline unsigned char puncture_11000000(unsigned char input) { return input & 0x3f;  }
+inline unsigned char puncture_11000000(unsigned char input) { return (input & 0x3f);  }
 inline unsigned char puncture_11000001(unsigned char input) { return (input >> 1) | puncture_01100000(input >> 1); }
 inline unsigned char puncture_11000010(unsigned char input) { return (input & 0x1) | ((input & 0x3c) >> 1) ; }
 inline unsigned char puncture_11000011(unsigned char input) { return (input >> 2) | puncture_00110000(input >> 2); }
@@ -225,7 +229,7 @@ inline unsigned char puncture_11011100(unsigned char input) { return (input & 0x
 inline unsigned char puncture_11011101(unsigned char input) { return (input >> 1) | puncture_01101110(input >> 1); }
 inline unsigned char puncture_11011110(unsigned char input) { return (input & 0x1) | ((input & 0x20) >> 4); }
 inline unsigned char puncture_11011111(unsigned char input) { return (input >> 5) | puncture_00000110(input >> 5); }
-inline unsigned char puncture_11100000(unsigned char input) { return input & 0x1f;  }
+inline unsigned char puncture_11100000(unsigned char input) { return (input & 0x1f);  }
 inline unsigned char puncture_11100001(unsigned char input) { return (input >> 1) | puncture_01110000(input >> 1); }
 inline unsigned char puncture_11100010(unsigned char input) { return (input & 0x1) | ((input & 0x1c) >> 1) ; }
 inline unsigned char puncture_11100011(unsigned char input) { return (input >> 2) | puncture_00111000(input >> 2); }
@@ -241,7 +245,7 @@ inline unsigned char puncture_11101100(unsigned char input) { return (input & 0x
 inline unsigned char puncture_11101101(unsigned char input) { return (input >> 1) | puncture_01110110(input >> 1); }
 inline unsigned char puncture_11101110(unsigned char input) { return (input & 0x1) | ((input & 0x10) >> 3); }
 inline unsigned char puncture_11101111(unsigned char input) { return (input >> 4) | puncture_00001110(input >> 4); }
-inline unsigned char puncture_11110000(unsigned char input) { return input & 0xf;  }
+inline unsigned char puncture_11110000(unsigned char input) { return (input & 0xf);  }
 inline unsigned char puncture_11110001(unsigned char input) { return (input >> 1) | puncture_01111000(input >> 1); }
 inline unsigned char puncture_11110010(unsigned char input) { return (input & 0x1) | ((input & 0xc) >> 1) ; }
 inline unsigned char puncture_11110011(unsigned char input) { return (input >> 2) | puncture_00111100(input >> 2); }
@@ -249,18 +253,18 @@ inline unsigned char puncture_11110100(unsigned char input) { return (input & 0x
 inline unsigned char puncture_11110101(unsigned char input) { return (input >> 1) | puncture_01111010(input >> 1); }
 inline unsigned char puncture_11110110(unsigned char input) { return (input & 0x1) | ((input & 0x8) >> 2) ; }
 inline unsigned char puncture_11110111(unsigned char input) { return (input >> 3) | puncture_00011110(input >> 3); }
-inline unsigned char puncture_11111000(unsigned char input) { return input & 0x7;  }
+inline unsigned char puncture_11111000(unsigned char input) { return (input & 0x7);  }
 inline unsigned char puncture_11111001(unsigned char input) { return (input >> 1) | puncture_01111100(input >> 1); }
 inline unsigned char puncture_11111010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) ; }
 inline unsigned char puncture_11111011(unsigned char input) { return (input >> 2) | puncture_00111110(input >> 2); }
-inline unsigned char puncture_11111100(unsigned char input) { return input & 0x3;  }
+inline unsigned char puncture_11111100(unsigned char input) { return (input & 0x3);  }
 inline unsigned char puncture_11111101(unsigned char input) { return (input >> 1) | puncture_01111110(input >> 1); }
-inline unsigned char puncture_11111110(unsigned char input) { return input & 0x1;  }
+inline unsigned char puncture_11111110(unsigned char input) { return (input & 0x1);  }
 inline unsigned char puncture_11111111(unsigned char input) { return 0;  }
 
 
 
-const puncture_func puncture_funcs[256] = {
+const puncture_func g_puncture_funcs[256] = {
     &puncture_00000000,
     &puncture_00000001,
     &puncture_00000010,
@@ -519,8 +523,7 @@ const puncture_func puncture_funcs[256] = {
     &puncture_11111111
 };
 
-// Puncture and condense example of 1024 bits in O(n*logn)
-// =======================================================
+// Puncture example of 1024 bits in O(n*logn)
 // 1024 / 8 = 128 bytes = 64x16b words = 32x32b dwords = 16x64b = 8x128b = 4x256b = 2x512b
 // 
 // 128x8b:
@@ -733,3 +736,79 @@ const puncture_func puncture_funcs[256] = {
 // 0x0000000000000000000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF >> to below as this is the MSbit part of the 1024b chunk
 // 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
 
+
+void build_data(unsigned char* input_data, int input_data_len) {
+    memset(input_data, 0xFF, input_data_len);
+}
+
+int build_structures(const int* punc_bits_indices, int puncture_bits_len, int* punc_bytes_list, unsigned char* bytes_punctures_list, unsigned char* bytes_num_punctures) {
+    int curr_pbyte_index = -1;
+    int num_pbytes = 0;
+
+    for (int pbit_index = 0; pbit_index < puncture_bits_len; pbit_index++) { // Go over the puncturing bits indices
+        int pbyte_index = punc_bits_indices[pbit_index] >> 3;
+        if (pbyte_index != curr_pbyte_index) { // if new byte index (to be punctured) encountered
+            curr_pbyte_index = pbyte_index;            // update current punctured byte
+            punc_bytes_list[num_pbytes] = pbyte_index; // Add current byte to the punctured bytes list
+            num_pbytes++;                              // inc number of punctured bytes
+        }
+        bytes_punctures_list[num_pbytes-1] |= (1 << (punc_bits_indices[pbit_index] % 8)); // update bit in byte
+        bytes_num_punctures[num_pbytes-1]++;                                              // increase number of punctured bits in punctured byte
+    }
+
+    return num_pbytes;
+}
+
+void puncture_data(unsigned char* input_data, int num_punc_bytes, int* punc_bytes_list, unsigned char* bytes_punctures_list) {
+    for (int byte_index = 0; byte_index < num_punc_bytes; byte_index++)
+        input_data[punc_bytes_list[byte_index]] = g_puncture_funcs[bytes_punctures_list[byte_index]](input_data[punc_bytes_list[byte_index]]);
+}
+
+
+void print_as_bytes(unsigned char* data, int data_len, const char* name) {
+    std::cout << name << " As Hex Bytes : \n\n";
+
+    for (int i = 0; i < data_len; i++)
+        printf("%02x ", data[i]);
+    std::cout << std::endl << std::endl;
+}
+
+void print_as_ints(int* data, int data_len, const char* name) {
+    std::cout << name << " As Hex Ints : \n\n";
+
+    for (int i = 0; i < data_len; i++)
+        printf("%08x ", data[i]);
+    std::cout << std::endl << std::endl;
+}
+
+
+int main(int argc, char** argv)
+{
+    #define INPUT_SIZE_BITS  1500
+    #define INPUT_SIZE_BYTES (INPUT_SIZE_BITS/8 + 1)
+    #define P_SIZE 18
+
+    unsigned char data[INPUT_SIZE_BYTES] = { 0 };
+
+    //                      byte     0  1   2            4      6       16 ...
+    //                           0 1 2  3   4   5  6  7  8   9 10   11  12   13   14   15   16   17 
+    const int p_bits[P_SIZE] = { 1,2,4, 8, 22, 33,34,35,37, 50,51, 128,129, 140, 150, 160, 170, 200 };
+    int p_bytes[P_SIZE] = { 0 };                     // bytes corresponding to p_bits
+    unsigned char p_bytes_punctures[P_SIZE] = { 0 }; // puncturing mask per byte (1: puncture, 0: no puncture)
+    unsigned char p_bytes_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per byte
+
+    build_data(data, INPUT_SIZE_BYTES); // Fill the input data (with all ones)
+    
+    // num_punctured_bytes: number of bytes in which there are punctures (len(p_bytes) == len(p_bytes_punctures) == len(p_bytes_num_puncs)
+    int num_punctured_bytes = build_structures(p_bits, P_SIZE, p_bytes, p_bytes_punctures, p_bytes_num_puncs);
+    puncture_data(data, num_punctured_bytes, p_bytes, p_bytes_punctures);
+    
+    print_as_bytes(data, INPUT_SIZE_BYTES, "data");
+    print_as_bytes(p_bytes_punctures, num_punctured_bytes, "p_bytes_punctures");
+    print_as_bytes(p_bytes_num_puncs, num_punctured_bytes, "p_bytes_num_puncs");
+
+    print_as_ints((int*)p_bits, P_SIZE, "p_bits");
+    print_as_ints(p_bytes, num_punctured_bytes, "p_bytes");
+
+    // condense_bytes(); // Condense according to example above
+}
