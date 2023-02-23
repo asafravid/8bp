@@ -826,14 +826,21 @@ int main(int argc, char** argv)
     #define INPUT_SIZE_BYTES (INPUT_SIZE_BITS/8 + 1)
     #define P_SIZE 18
 
-    unsigned char data[INPUT_SIZE_BYTES] = { 0 };
+    unsigned char * data = (unsigned char*)_aligned_malloc(INPUT_SIZE_BYTES, 512);
+
+    _ASSERT((((unsigned long long)data) % 512 == 0));
 
     //                      byte     0  1   2            4      6       16 ...
     //                           0 1 2  3   4   5  6  7  8   9 10   11  12   13   14   15   16   17 
     const int p_bits[P_SIZE] = { 1,2,4, 8, 22, 33,34,35,37, 50,51, 128,129, 140, 150, 160, 170, 200 };
+
     int p_bytes[P_SIZE] = { 0 };                     // bytes corresponding to p_bits
     unsigned char p_bytes_punctures[P_SIZE] = { 0 }; // puncturing mask per byte (1: puncture, 0: no puncture)
     unsigned char p_bytes_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per byte
+
+    int p_words[P_SIZE] = { 0 };                     // bytes corresponding to p_bits
+    unsigned char p_words_punctures[P_SIZE] = { 0 }; // puncturing mask per byte (1: puncture, 0: no puncture)
+    unsigned char p_words_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per byte
 
     build_data(data, INPUT_SIZE_BYTES); // Fill the input data (with all ones)
     
@@ -852,4 +859,6 @@ int main(int argc, char** argv)
     condense_even_byte_pairs(data, p_bytes, num_punctured_bytes, p_bytes_num_puncs); // Condense according to example above
 
     print_as_bytes(data, INPUT_SIZE_BYTES, "data after condense_even_byte_pairs()", true);
+
+    _aligned_free(data);
 }
