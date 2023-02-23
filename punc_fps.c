@@ -3,264 +3,270 @@
 
 #include <iostream>
 
-typedef unsigned char (*puncture_func)(unsigned char input);
+typedef unsigned char      u8;  // 8b
+typedef unsigned short     u16;  // 16b
+typedef unsigned int       dword; // 32b
+typedef unsigned long long u64;   // 64b
 
-inline unsigned char puncture_00000000(unsigned char input) { return (input   ); }
-inline unsigned char puncture_00000001(unsigned char input) { return (input>>1);  }
-inline unsigned char puncture_00000010(unsigned char input) { return ((input & 0xfc) >> 1) | (input & 0x1);  }
-inline unsigned char puncture_00000011(unsigned char input) { return (input>>2);  }
-inline unsigned char puncture_00000100(unsigned char input) { return ((input & 0xf8) >> 1) | (input & 0x3); }
-inline unsigned char puncture_00000101(unsigned char input) { return (input >> 1) | puncture_00000010(input >> 1); }
-inline unsigned char puncture_00000110(unsigned char input) { return (input & 0x1) | ((input & 0xf8) >> 2);  }
-inline unsigned char puncture_00000111(unsigned char input) { return input>>3;  }
-inline unsigned char puncture_00001000(unsigned char input) { return ((input & 0xf0) >> 1) | (input & 0x7); }
-inline unsigned char puncture_00001001(unsigned char input) { return (input >> 1) | puncture_00000100(input >> 1); }
-inline unsigned char puncture_00001010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0xf0) >> 2); }
-inline unsigned char puncture_00001011(unsigned char input) { return (input>>2) | puncture_00000010(input >> 2); }
-inline unsigned char puncture_00001100(unsigned char input) { return (input & 0x3) | ((input & 0xf0) >> 2); }
-inline unsigned char puncture_00001101(unsigned char input) { return (input >> 1) | puncture_00000110(input >> 1);}
-inline unsigned char puncture_00001110(unsigned char input) { return (input & 0x1) | ((input & 0xf0) >> 3);  }
-inline unsigned char puncture_00001111(unsigned char input) { return (input>>4);  }
-inline unsigned char puncture_00010000(unsigned char input) { return ((input & 0xe0) >> 1) | (input & 0xf); }
-inline unsigned char puncture_00010001(unsigned char input) { return (input >> 1) | puncture_00001000(input >> 1); }
-inline unsigned char puncture_00010010(unsigned char input) { return (input & 0x1) | ((input & 0xc)>>1) | ((input & 0xe0) >> 2);  }
-inline unsigned char puncture_00010011(unsigned char input) { return (input>>2) | puncture_00000100(input >> 2); }
-inline unsigned char puncture_00010100(unsigned char input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0xe0) >> 2); }
-inline unsigned char puncture_00010101(unsigned char input) { return (input>>1) | puncture_00001010(input >> 1); }
-inline unsigned char puncture_00010110(unsigned char input) { return (input & 0x1) | ((input & 0x8)>>2) | ((input & 0xe0) >> 3);  }
-inline unsigned char puncture_00010111(unsigned char input) { return (input >> 3) | puncture_00000010(input >> 3); }
-inline unsigned char puncture_00011000(unsigned char input) { return (input & 0x7) | ((input & 0xe0) >> 2); }
-inline unsigned char puncture_00011001(unsigned char input) { return (input >> 1) | puncture_00001100(input >> 1); }
-inline unsigned char puncture_00011010(unsigned char input) { return (input & 0x1) | ((input & 0x4)>>1) | ((input & 0xe0) >> 3);  }
-inline unsigned char puncture_00011011(unsigned char input) { return (input >> 2) | puncture_00000110(input >> 2); }
-inline unsigned char puncture_00011100(unsigned char input) { return (input & 0x3) | ((input & 0xe0) >> 3); }
-inline unsigned char puncture_00011101(unsigned char input) { return (input >> 1) | puncture_00001110(input >> 1); }
-inline unsigned char puncture_00011110(unsigned char input) { return (input & 0x1) | ((input & 0xe0) >> 4);  }
-inline unsigned char puncture_00011111(unsigned char input) { return (input>>5);  }
-inline unsigned char puncture_00100000(unsigned char input) { return ((input & 0xc0) >> 1) | (input & 0x1f); }
-inline unsigned char puncture_00100001(unsigned char input) { return (input >> 1) | puncture_00010000(input >> 1); }
-inline unsigned char puncture_00100010(unsigned char input) { return (input & 0x1) | ((input & 0x1c)>>1) | ((input & 0xc0) >> 2);  }
-inline unsigned char puncture_00100011(unsigned char input) { return (input >> 2) | puncture_00001000(input >> 2); }
-inline unsigned char puncture_00100100(unsigned char input) { return (input & 0x3) | ((input & 0x18) >> 1) | ((input & 0xc0) >> 2); }
-inline unsigned char puncture_00100101(unsigned char input) { return (input >> 1) | puncture_00010010(input >> 1); }
-inline unsigned char puncture_00100110(unsigned char input) { return (input & 0x1) | ((input & 0x18) >> 2) | ((input & 0xc0) >> 3);  }
-inline unsigned char puncture_00100111(unsigned char input) { return (input >> 3) | puncture_00000100(input >> 3); }
-inline unsigned char puncture_00101000(unsigned char input) { return (input & 0x7) | ((input & 0x10) >> 1) | ((input & 0xc0) >> 2); }
-inline unsigned char puncture_00101001(unsigned char input) { return (input >> 1) | puncture_00010100(input >> 1); }
-inline unsigned char puncture_00101010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x10) >> 2) | ((input & 0xc0) >> 3);  }
-inline unsigned char puncture_00101011(unsigned char input) { return (input >> 2) | puncture_00001010(input >> 2); }
-inline unsigned char puncture_00101100(unsigned char input) { return (input & 0x3) | ((input & 0x10) >> 2) | ((input & 0xc0) >> 3); }
-inline unsigned char puncture_00101101(unsigned char input) { return (input >> 1) | puncture_00010110(input >> 1); }
-inline unsigned char puncture_00101110(unsigned char input) { return (input & 0x1) | ((input & 0x10) >> 3) | ((input & 0xc0) >> 4); }
-inline unsigned char puncture_00101111(unsigned char input) { return (input >> 4) | puncture_00000010(input >> 4); }
-inline unsigned char puncture_00110000(unsigned char input) { return (input & 0xf) | ((input & 0xc0) >> 2); }
-inline unsigned char puncture_00110001(unsigned char input) { return (input >> 1) | puncture_00011000(input >> 1); }
-inline unsigned char puncture_00110010(unsigned char input) { return (input & 0x1) | ((input & 0xc) >> 1) | ((input & 0xc0) >> 3); }
-inline unsigned char puncture_00110011(unsigned char input) { return (input >> 2) | puncture_00001100(input >> 2); }
-inline unsigned char puncture_00110100(unsigned char input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0xc0) >> 3); }
-inline unsigned char puncture_00110101(unsigned char input) { return (input >> 1) | puncture_00011010(input >> 1); }
-inline unsigned char puncture_00110110(unsigned char input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0xc0) >> 4); }
-inline unsigned char puncture_00110111(unsigned char input) { return (input >> 3) | puncture_00000110(input >> 3); }
-inline unsigned char puncture_00111000(unsigned char input) { return (input & 0x7) | ((input & 0xc0) >> 3); }
-inline unsigned char puncture_00111001(unsigned char input) { return (input >> 1) | puncture_00011100(input >> 1); }
-inline unsigned char puncture_00111010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0xc0) >> 4); }
-inline unsigned char puncture_00111011(unsigned char input) { return (input >> 2) | puncture_00001110(input >> 2); }
-inline unsigned char puncture_00111100(unsigned char input) { return (input & 0x3) | ((input & 0xc0) >> 4); }
-inline unsigned char puncture_00111101(unsigned char input) { return (input >> 1) | puncture_00011110(input >> 1); }
-inline unsigned char puncture_00111110(unsigned char input) { return (input & 0x1) | ((input & 0xc0) >> 5); }
-inline unsigned char puncture_00111111(unsigned char input) { return (input>>6);  }
-inline unsigned char puncture_01000000(unsigned char input) { return ((input & 0x80) >> 1) | (input & 0x3f); }
-inline unsigned char puncture_01000001(unsigned char input) { return (input >> 1) | puncture_00100000(input >> 1); }
-inline unsigned char puncture_01000010(unsigned char input) { return (input & 0x1) | ((input & 0x3c) >> 1) | ((input & 0x80) >> 2); }
-inline unsigned char puncture_01000011(unsigned char input) { return (input >> 2) | puncture_00010000(input >> 2); }
-inline unsigned char puncture_01000100(unsigned char input) { return (input & 0x3) | ((input & 0x38) >> 1) | ((input & 0x80) >> 2); }
-inline unsigned char puncture_01000101(unsigned char input) { return (input >> 1) | puncture_00100010(input >> 1); }
-inline unsigned char puncture_01000110(unsigned char input) { return (input & 0x1) | ((input & 0x38) >> 2) | ((input & 0x80) >> 3); }
-inline unsigned char puncture_01000111(unsigned char input) { return (input >> 3) | puncture_00001000(input >> 3); }
-inline unsigned char puncture_01001000(unsigned char input) { return (input & 0x7) | ((input & 0x30) >> 1) | ((input & 0x80) >> 2); }
-inline unsigned char puncture_01001001(unsigned char input) { return (input >> 1) | puncture_00100100(input >> 1); }
-inline unsigned char puncture_01001010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x30) >> 2) | ((input & 0x80) >> 3); }
-inline unsigned char puncture_01001011(unsigned char input) { return (input >> 2) | puncture_00010010(input >> 2); }
-inline unsigned char puncture_01001100(unsigned char input) { return (input & 0x3) | ((input & 0x30) >> 2) | ((input & 0x80) >> 3); }
-inline unsigned char puncture_01001101(unsigned char input) { return (input >> 1) | puncture_00100110(input >> 1); }
-inline unsigned char puncture_01001110(unsigned char input) { return (input & 0x1) | ((input & 0x30) >> 3) | ((input & 0x80) >> 4); }
-inline unsigned char puncture_01001111(unsigned char input) { return (input >> 4) | puncture_00000100(input >> 4); }
-inline unsigned char puncture_01010000(unsigned char input) { return (input & 0xf) | ((input & 0x20) >> 1) | ((input & 0x80) >> 2); }
-inline unsigned char puncture_01010001(unsigned char input) { return (input >> 1) | puncture_00101000(input >> 1); }
-inline unsigned char puncture_01010010(unsigned char input) { return (input & 0x1) | ((input & 0xc) >> 1) | ((input & 0x20) >> 2) | ((input & 0x80) >> 3); }
-inline unsigned char puncture_01010011(unsigned char input) { return (input >> 2) | puncture_00010100(input >> 2); }
-inline unsigned char puncture_01010100(unsigned char input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x20) >> 2) | ((input & 0x80) >> 3); }
-inline unsigned char puncture_01010101(unsigned char input) { return (input >> 1) | puncture_00101010(input >> 1); }
-inline unsigned char puncture_01010110(unsigned char input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0x20) >> 3) | ((input & 0x80) >> 4); }
-inline unsigned char puncture_01010111(unsigned char input) { return (input >> 3) | puncture_00001010(input >> 3); }
-inline unsigned char puncture_01011000(unsigned char input) { return (input & 0x7) | ((input & 0x20) >> 2) | ((input & 0x80) >> 3); }
-inline unsigned char puncture_01011001(unsigned char input) { return (input >> 1) | puncture_00101100(input >> 1); }
-inline unsigned char puncture_01011010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x20) >> 3) | ((input & 0x80) >> 4); }
-inline unsigned char puncture_01011011(unsigned char input) { return (input >> 2) | puncture_00010110(input >> 2); }
-inline unsigned char puncture_01011100(unsigned char input) { return (input & 0x3) | ((input & 0x20) >> 3) | ((input & 0x80) >> 4); }
-inline unsigned char puncture_01011101(unsigned char input) { return (input >> 1) | puncture_00101110(input >> 1); }
-inline unsigned char puncture_01011110(unsigned char input) { return (input & 0x1) | ((input & 0x20) >> 4) | ((input & 0x80) >> 5); }
-inline unsigned char puncture_01011111(unsigned char input) { return (input >> 5) | puncture_00000010(input >> 5); }
-inline unsigned char puncture_01100000(unsigned char input) { return (input & 0x1f) | ((input & 0x80) >> 2); }
-inline unsigned char puncture_01100001(unsigned char input) { return (input >> 1) | puncture_00110000(input >> 1); }
-inline unsigned char puncture_01100010(unsigned char input) { return (input & 0x1) | ((input & 0x1c) >> 1) | ((input & 0x80) >> 3); }
-inline unsigned char puncture_01100011(unsigned char input) { return (input >> 2) | puncture_00011000(input >> 2); }
-inline unsigned char puncture_01100100(unsigned char input) { return (input & 0x3) | ((input & 0x18) >> 1) | ((input & 0x80) >> 3); }
-inline unsigned char puncture_01100101(unsigned char input) { return (input >> 1) | puncture_00110010(input >> 1); }
-inline unsigned char puncture_01100110(unsigned char input) { return (input & 0x1) | ((input & 0x18) >> 2) | ((input & 0x80) >> 4); }
-inline unsigned char puncture_01100111(unsigned char input) { return (input >> 3) | puncture_00001100(input >> 3); }
-inline unsigned char puncture_01101000(unsigned char input) { return (input & 0x7) | ((input & 0x10) >> 1) | ((input & 0x80) >> 3); }
-inline unsigned char puncture_01101001(unsigned char input) { return (input >> 1) | puncture_00110100(input >> 1); }
-inline unsigned char puncture_01101010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x10) >> 2) | ((input & 0x80) >> 4); }
-inline unsigned char puncture_01101011(unsigned char input) { return (input >> 2) | puncture_00011010(input >> 2); }
-inline unsigned char puncture_01101100(unsigned char input) { return (input & 0x3) | ((input & 0x10) >> 2) | ((input & 0x80) >> 4); }
-inline unsigned char puncture_01101101(unsigned char input) { return (input >> 1) | puncture_00110110(input >> 1); }
-inline unsigned char puncture_01101110(unsigned char input) { return (input & 0x1) | ((input & 0x10) >> 3) | ((input & 0x80) >> 5); }
-inline unsigned char puncture_01101111(unsigned char input) { return (input >> 4) | puncture_00000110(input >> 4); }
-inline unsigned char puncture_01110000(unsigned char input) { return (input & 0xf) | ((input & 0x80) >> 3); }
-inline unsigned char puncture_01110001(unsigned char input) { return (input >> 1) | puncture_00111000(input >> 1); }
-inline unsigned char puncture_01110010(unsigned char input) { return (input & 0x1) | ((input & 0xc) >> 1) | ((input & 0x80) >> 4); }
-inline unsigned char puncture_01110011(unsigned char input) { return (input >> 2) | puncture_00011100(input >> 2); }
-inline unsigned char puncture_01110100(unsigned char input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x80) >> 4); }
-inline unsigned char puncture_01110101(unsigned char input) { return (input >> 1) | puncture_00111010(input >> 1); }
-inline unsigned char puncture_01110110(unsigned char input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0x80) >> 5); }
-inline unsigned char puncture_01110111(unsigned char input) { return (input >> 3) | puncture_00001110(input >> 3); }
-inline unsigned char puncture_01111000(unsigned char input) { return (input & 0x7) | ((input & 0x80) >> 4); }
-inline unsigned char puncture_01111001(unsigned char input) { return (input >> 1) | puncture_00111100(input >> 1); }
-inline unsigned char puncture_01111010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x80) >> 5); }
-inline unsigned char puncture_01111011(unsigned char input) { return (input >> 2) | puncture_00011110(input >> 2); }
-inline unsigned char puncture_01111100(unsigned char input) { return (input & 0x3) | ((input & 0x80) >> 5); }
-inline unsigned char puncture_01111101(unsigned char input) { return (input >> 1) | puncture_00111110(input >> 1); }
-inline unsigned char puncture_01111110(unsigned char input) { return (input & 0x1) | ((input & 0x80) >> 6); }
-inline unsigned char puncture_01111111(unsigned char input) { return (input>>7);  }
-inline unsigned char puncture_10000000(unsigned char input) { return (input & 0x7f);  }
-inline unsigned char puncture_10000001(unsigned char input) { return (input >> 1) | puncture_01000000(input >> 1); }
-inline unsigned char puncture_10000010(unsigned char input) { return (input & 0x1) | ((input & 0x7c) >> 1); }
-inline unsigned char puncture_10000011(unsigned char input) { return (input >> 2) | puncture_00100000(input >> 2); }
-inline unsigned char puncture_10000100(unsigned char input) { return (input & 0x3) | ((input & 0x78) >> 1) ; }
-inline unsigned char puncture_10000101(unsigned char input) { return (input >> 1) | puncture_01000010(input >> 1); }
-inline unsigned char puncture_10000110(unsigned char input) { return (input & 0x1) | ((input & 0x78) >> 2); }
-inline unsigned char puncture_10000111(unsigned char input) { return (input >> 3) | puncture_00010000(input >> 3); }
-inline unsigned char puncture_10001000(unsigned char input) { return (input & 0x7) | ((input & 0x70) >> 1) ; }
-inline unsigned char puncture_10001001(unsigned char input) { return (input >> 1) | puncture_01000100(input >> 1); }
-inline unsigned char puncture_10001010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x70) >> 2); }
-inline unsigned char puncture_10001011(unsigned char input) { return (input >> 2) | puncture_00100010(input >> 2); }
-inline unsigned char puncture_10001100(unsigned char input) { return (input & 0x3) | ((input & 0x70) >> 2) ; }
-inline unsigned char puncture_10001101(unsigned char input) { return (input >> 1) | puncture_01000110(input >> 1); }
-inline unsigned char puncture_10001110(unsigned char input) { return (input & 0x1) | ((input & 0x70) >> 3); }
-inline unsigned char puncture_10001111(unsigned char input) { return (input >> 4) | puncture_00001000(input >> 4); }
-inline unsigned char puncture_10010000(unsigned char input) { return (input & 0xf) | ((input & 0x60) >> 1) ; }
-inline unsigned char puncture_10010001(unsigned char input) { return (input >> 1) | puncture_01001000(input >> 1); }
-inline unsigned char puncture_10010010(unsigned char input) { return (input & 0x1) | ((input & 0xc0) >> 1) | ((input & 0x60) >> 2); }
-inline unsigned char puncture_10010011(unsigned char input) { return (input >> 2) | puncture_00100100(input >> 2); }
-inline unsigned char puncture_10010100(unsigned char input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x60) >> 2) ; }
-inline unsigned char puncture_10010101(unsigned char input) { return (input >> 1) | puncture_01001010(input >> 1); }
-inline unsigned char puncture_10010110(unsigned char input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0x60) >> 3); }
-inline unsigned char puncture_10010111(unsigned char input) { return (input >> 3) | puncture_00010010(input >> 3); }
-inline unsigned char puncture_10011000(unsigned char input) { return (input & 0x7) | ((input & 0x60) >> 2) ; }
-inline unsigned char puncture_10011001(unsigned char input) { return (input >> 1) | puncture_01001100(input >> 1); }
-inline unsigned char puncture_10011010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x60) >> 3); }
-inline unsigned char puncture_10011011(unsigned char input) { return (input >> 2) | puncture_00100110(input >> 2); }
-inline unsigned char puncture_10011100(unsigned char input) { return (input & 0x3) | ((input & 0x60) >> 3) ; }
-inline unsigned char puncture_10011101(unsigned char input) { return (input >> 1) | puncture_01001110(input >> 1); }
-inline unsigned char puncture_10011110(unsigned char input) { return (input & 0x1) | ((input & 0x60) >> 4); }
-inline unsigned char puncture_10011111(unsigned char input) { return (input >> 5) | puncture_00000100(input >> 5); }
-inline unsigned char puncture_10100000(unsigned char input) { return (input & 0x1f) | ((input & 0x40) >> 1); }
-inline unsigned char puncture_10100001(unsigned char input) { return (input >> 1) | puncture_01010000(input >> 1); }
-inline unsigned char puncture_10100010(unsigned char input) { return (input & 0x1) | ((input & 0x1c) >> 1) | ((input & 0x40) >> 2); }
-inline unsigned char puncture_10100011(unsigned char input) { return (input >> 2) | puncture_00101000(input >> 2); }
-inline unsigned char puncture_10100100(unsigned char input) { return (input & 0x3) | ((input & 0x18) >> 1) | ((input & 0x40) >> 2) ; }
-inline unsigned char puncture_10100101(unsigned char input) { return (input >> 1) | puncture_01010010(input >> 1); }
-inline unsigned char puncture_10100110(unsigned char input) { return (input & 0x1) | ((input & 0x18) >> 2) | ((input & 0x40) >> 3); }
-inline unsigned char puncture_10100111(unsigned char input) { return (input >> 3) | puncture_00010100(input >> 3); }
-inline unsigned char puncture_10101000(unsigned char input) { return (input & 0x7) | ((input & 0x10) >> 1) | ((input & 0x40) >> 2) ; }
-inline unsigned char puncture_10101001(unsigned char input) { return (input >> 1) | puncture_01010100(input >> 1); }
-inline unsigned char puncture_10101010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x10) >> 2) | ((input & 0x40) >> 3); }
-inline unsigned char puncture_10101011(unsigned char input) { return (input >> 2) | puncture_00101010(input >> 2); }
-inline unsigned char puncture_10101100(unsigned char input) { return (input & 0x3) | ((input & 0x10) >> 2) | ((input & 0x40) >> 3) ; }
-inline unsigned char puncture_10101101(unsigned char input) { return (input >> 1) | puncture_01010110(input >> 1); }
-inline unsigned char puncture_10101110(unsigned char input) { return (input & 0x1) | ((input & 0x10) >> 3) | ((input & 0x40) >> 4); }
-inline unsigned char puncture_10101111(unsigned char input) { return (input >> 4) | puncture_00001010(input >> 4); }
-inline unsigned char puncture_10110000(unsigned char input) { return (input & 0xf) | ((input & 0x40) >> 2) ; }
-inline unsigned char puncture_10110001(unsigned char input) { return (input >> 1) | puncture_01011000(input >> 1); }
-inline unsigned char puncture_10110010(unsigned char input) { return (input & 0x1) | ((input & 0xc) >> 1) | ((input & 0x40) >> 3); }
-inline unsigned char puncture_10110011(unsigned char input) { return (input >> 2) | puncture_00101100(input >> 2); }
-inline unsigned char puncture_10110100(unsigned char input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x40) >> 3) ; }
-inline unsigned char puncture_10110101(unsigned char input) { return (input >> 1) | puncture_01011010(input >> 1); }
-inline unsigned char puncture_10110110(unsigned char input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0x40) >> 4); }
-inline unsigned char puncture_10110111(unsigned char input) { return (input >> 3) | puncture_00010110(input >> 3); }
-inline unsigned char puncture_10111000(unsigned char input) { return (input & 0x7) | ((input & 0x40) >> 3) ; }
-inline unsigned char puncture_10111001(unsigned char input) { return (input >> 1) | puncture_01011100(input >> 1); }
-inline unsigned char puncture_10111010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x40) >> 4); }
-inline unsigned char puncture_10111011(unsigned char input) { return (input >> 2) | puncture_00101110(input >> 2); }
-inline unsigned char puncture_10111100(unsigned char input) { return (input & 0x3) | ((input & 0x40) >> 4) ; }
-inline unsigned char puncture_10111101(unsigned char input) { return (input >> 1) | puncture_01011110(input >> 1); }
-inline unsigned char puncture_10111110(unsigned char input) { return (input & 0x1) | ((input & 0x40) >> 5); }
-inline unsigned char puncture_10111111(unsigned char input) { return (input >> 6) | puncture_00000010(input >> 6); }
-inline unsigned char puncture_11000000(unsigned char input) { return (input & 0x3f);  }
-inline unsigned char puncture_11000001(unsigned char input) { return (input >> 1) | puncture_01100000(input >> 1); }
-inline unsigned char puncture_11000010(unsigned char input) { return (input & 0x1) | ((input & 0x3c) >> 1) ; }
-inline unsigned char puncture_11000011(unsigned char input) { return (input >> 2) | puncture_00110000(input >> 2); }
-inline unsigned char puncture_11000100(unsigned char input) { return (input & 0x3) | ((input & 0x38) >> 1) ; }
-inline unsigned char puncture_11000101(unsigned char input) { return (input >> 1) | puncture_01100010(input >> 1); }
-inline unsigned char puncture_11000110(unsigned char input) { return (input & 0x1) | ((input & 0x38) >> 2) ; }
-inline unsigned char puncture_11000111(unsigned char input) { return (input >> 3) | puncture_00011000(input >> 3); }
-inline unsigned char puncture_11001000(unsigned char input) { return (input & 0x7) | ((input & 0x3) >> 1) ; }
-inline unsigned char puncture_11001001(unsigned char input) { return (input >> 1) | puncture_01100100(input >> 1); }
-inline unsigned char puncture_11001010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x30) >> 2); }
-inline unsigned char puncture_11001011(unsigned char input) { return (input >> 2) | puncture_00110010(input >> 2); }
-inline unsigned char puncture_11001100(unsigned char input) { return (input & 0x3) | ((input & 0x30) >> 2) ; }
-inline unsigned char puncture_11001101(unsigned char input) { return (input >> 1) | puncture_01100110(input >> 1); }
-inline unsigned char puncture_11001110(unsigned char input) { return (input & 0x1) | ((input & 0x30) >> 3); }
-inline unsigned char puncture_11001111(unsigned char input) { return (input >> 4) | puncture_00001100(input >> 4); }
-inline unsigned char puncture_11010000(unsigned char input) { return (input & 0xf) | ((input & 0x20) >> 1) ; }
-inline unsigned char puncture_11010001(unsigned char input) { return (input >> 1) | puncture_01101000(input >> 1); }
-inline unsigned char puncture_11010010(unsigned char input) { return (input & 0x1) | ((input & 0xc) >> 1) | ((input & 0x20) >> 2); }
-inline unsigned char puncture_11010011(unsigned char input) { return (input >> 2) | puncture_00110100(input >> 2); }
-inline unsigned char puncture_11010100(unsigned char input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x20) >> 2) ; }
-inline unsigned char puncture_11010101(unsigned char input) { return (input >> 1) | puncture_01101010(input >> 1); }
-inline unsigned char puncture_11010110(unsigned char input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0x20) >> 3); }
-inline unsigned char puncture_11010111(unsigned char input) { return (input >> 3) | puncture_00011010(input >> 3); }
-inline unsigned char puncture_11011000(unsigned char input) { return (input & 0x7) | ((input & 0x20) >> 2) ; }
-inline unsigned char puncture_11011001(unsigned char input) { return (input >> 1) | puncture_01101100(input >> 1); }
-inline unsigned char puncture_11011010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x20) >> 3); }
-inline unsigned char puncture_11011011(unsigned char input) { return (input >> 2) | puncture_00110110(input >> 2); }
-inline unsigned char puncture_11011100(unsigned char input) { return (input & 0x3) | ((input & 0x20) >> 3) ; }
-inline unsigned char puncture_11011101(unsigned char input) { return (input >> 1) | puncture_01101110(input >> 1); }
-inline unsigned char puncture_11011110(unsigned char input) { return (input & 0x1) | ((input & 0x20) >> 4); }
-inline unsigned char puncture_11011111(unsigned char input) { return (input >> 5) | puncture_00000110(input >> 5); }
-inline unsigned char puncture_11100000(unsigned char input) { return (input & 0x1f);  }
-inline unsigned char puncture_11100001(unsigned char input) { return (input >> 1) | puncture_01110000(input >> 1); }
-inline unsigned char puncture_11100010(unsigned char input) { return (input & 0x1) | ((input & 0x1c) >> 1) ; }
-inline unsigned char puncture_11100011(unsigned char input) { return (input >> 2) | puncture_00111000(input >> 2); }
-inline unsigned char puncture_11100100(unsigned char input) { return (input & 0x3) | ((input & 0x18) >> 1) ; }
-inline unsigned char puncture_11100101(unsigned char input) { return (input >> 1) | puncture_01110010(input >> 1); }
-inline unsigned char puncture_11100110(unsigned char input) { return (input & 0x1) | ((input & 0x18) >> 2) ; }
-inline unsigned char puncture_11100111(unsigned char input) { return (input >> 3) | puncture_00011100(input >> 3); }
-inline unsigned char puncture_11101000(unsigned char input) { return (input & 0x7) | ((input & 0x10) >> 1) ; }
-inline unsigned char puncture_11101001(unsigned char input) { return (input >> 1) | puncture_01110100(input >> 1); }
-inline unsigned char puncture_11101010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x10) >> 2); }
-inline unsigned char puncture_11101011(unsigned char input) { return (input >> 2) | puncture_00111010(input >> 2); }
-inline unsigned char puncture_11101100(unsigned char input) { return (input & 0x3) | ((input & 0x10) >> 2) ; }
-inline unsigned char puncture_11101101(unsigned char input) { return (input >> 1) | puncture_01110110(input >> 1); }
-inline unsigned char puncture_11101110(unsigned char input) { return (input & 0x1) | ((input & 0x10) >> 3); }
-inline unsigned char puncture_11101111(unsigned char input) { return (input >> 4) | puncture_00001110(input >> 4); }
-inline unsigned char puncture_11110000(unsigned char input) { return (input & 0xf);  }
-inline unsigned char puncture_11110001(unsigned char input) { return (input >> 1) | puncture_01111000(input >> 1); }
-inline unsigned char puncture_11110010(unsigned char input) { return (input & 0x1) | ((input & 0xc) >> 1) ; }
-inline unsigned char puncture_11110011(unsigned char input) { return (input >> 2) | puncture_00111100(input >> 2); }
-inline unsigned char puncture_11110100(unsigned char input) { return (input & 0x3) | ((input & 0x8) >> 1) ; }
-inline unsigned char puncture_11110101(unsigned char input) { return (input >> 1) | puncture_01111010(input >> 1); }
-inline unsigned char puncture_11110110(unsigned char input) { return (input & 0x1) | ((input & 0x8) >> 2) ; }
-inline unsigned char puncture_11110111(unsigned char input) { return (input >> 3) | puncture_00011110(input >> 3); }
-inline unsigned char puncture_11111000(unsigned char input) { return (input & 0x7);  }
-inline unsigned char puncture_11111001(unsigned char input) { return (input >> 1) | puncture_01111100(input >> 1); }
-inline unsigned char puncture_11111010(unsigned char input) { return (input & 0x1) | ((input & 0x4) >> 1) ; }
-inline unsigned char puncture_11111011(unsigned char input) { return (input >> 2) | puncture_00111110(input >> 2); }
-inline unsigned char puncture_11111100(unsigned char input) { return (input & 0x3);  }
-inline unsigned char puncture_11111101(unsigned char input) { return (input >> 1) | puncture_01111110(input >> 1); }
-inline unsigned char puncture_11111110(unsigned char input) { return (input & 0x1);  }
-inline unsigned char puncture_11111111(unsigned char input) { return 0;  }
+typedef u8 (*puncture_func)(u8 input);
+
+
+inline u8 puncture_00000000(u8 input) { return (input   ); }
+inline u8 puncture_00000001(u8 input) { return (input>>1);  }
+inline u8 puncture_00000010(u8 input) { return ((input & 0xfc) >> 1) | (input & 0x1);  }
+inline u8 puncture_00000011(u8 input) { return (input>>2);  }
+inline u8 puncture_00000100(u8 input) { return ((input & 0xf8) >> 1) | (input & 0x3); }
+inline u8 puncture_00000101(u8 input) { return (input >> 1) | puncture_00000010(input >> 1); }
+inline u8 puncture_00000110(u8 input) { return (input & 0x1) | ((input & 0xf8) >> 2);  }
+inline u8 puncture_00000111(u8 input) { return input>>3;  }
+inline u8 puncture_00001000(u8 input) { return ((input & 0xf0) >> 1) | (input & 0x7); }
+inline u8 puncture_00001001(u8 input) { return (input >> 1) | puncture_00000100(input >> 1); }
+inline u8 puncture_00001010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0xf0) >> 2); }
+inline u8 puncture_00001011(u8 input) { return (input>>2) | puncture_00000010(input >> 2); }
+inline u8 puncture_00001100(u8 input) { return (input & 0x3) | ((input & 0xf0) >> 2); }
+inline u8 puncture_00001101(u8 input) { return (input >> 1) | puncture_00000110(input >> 1);}
+inline u8 puncture_00001110(u8 input) { return (input & 0x1) | ((input & 0xf0) >> 3);  }
+inline u8 puncture_00001111(u8 input) { return (input>>4);  }
+inline u8 puncture_00010000(u8 input) { return ((input & 0xe0) >> 1) | (input & 0xf); }
+inline u8 puncture_00010001(u8 input) { return (input >> 1) | puncture_00001000(input >> 1); }
+inline u8 puncture_00010010(u8 input) { return (input & 0x1) | ((input & 0xc)>>1) | ((input & 0xe0) >> 2);  }
+inline u8 puncture_00010011(u8 input) { return (input>>2) | puncture_00000100(input >> 2); }
+inline u8 puncture_00010100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0xe0) >> 2); }
+inline u8 puncture_00010101(u8 input) { return (input>>1) | puncture_00001010(input >> 1); }
+inline u8 puncture_00010110(u8 input) { return (input & 0x1) | ((input & 0x8)>>2) | ((input & 0xe0) >> 3);  }
+inline u8 puncture_00010111(u8 input) { return (input >> 3) | puncture_00000010(input >> 3); }
+inline u8 puncture_00011000(u8 input) { return (input & 0x7) | ((input & 0xe0) >> 2); }
+inline u8 puncture_00011001(u8 input) { return (input >> 1) | puncture_00001100(input >> 1); }
+inline u8 puncture_00011010(u8 input) { return (input & 0x1) | ((input & 0x4)>>1) | ((input & 0xe0) >> 3);  }
+inline u8 puncture_00011011(u8 input) { return (input >> 2) | puncture_00000110(input >> 2); }
+inline u8 puncture_00011100(u8 input) { return (input & 0x3) | ((input & 0xe0) >> 3); }
+inline u8 puncture_00011101(u8 input) { return (input >> 1) | puncture_00001110(input >> 1); }
+inline u8 puncture_00011110(u8 input) { return (input & 0x1) | ((input & 0xe0) >> 4);  }
+inline u8 puncture_00011111(u8 input) { return (input>>5);  }
+inline u8 puncture_00100000(u8 input) { return ((input & 0xc0) >> 1) | (input & 0x1f); }
+inline u8 puncture_00100001(u8 input) { return (input >> 1) | puncture_00010000(input >> 1); }
+inline u8 puncture_00100010(u8 input) { return (input & 0x1) | ((input & 0x1c)>>1) | ((input & 0xc0) >> 2);  }
+inline u8 puncture_00100011(u8 input) { return (input >> 2) | puncture_00001000(input >> 2); }
+inline u8 puncture_00100100(u8 input) { return (input & 0x3) | ((input & 0x18) >> 1) | ((input & 0xc0) >> 2); }
+inline u8 puncture_00100101(u8 input) { return (input >> 1) | puncture_00010010(input >> 1); }
+inline u8 puncture_00100110(u8 input) { return (input & 0x1) | ((input & 0x18) >> 2) | ((input & 0xc0) >> 3);  }
+inline u8 puncture_00100111(u8 input) { return (input >> 3) | puncture_00000100(input >> 3); }
+inline u8 puncture_00101000(u8 input) { return (input & 0x7) | ((input & 0x10) >> 1) | ((input & 0xc0) >> 2); }
+inline u8 puncture_00101001(u8 input) { return (input >> 1) | puncture_00010100(input >> 1); }
+inline u8 puncture_00101010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x10) >> 2) | ((input & 0xc0) >> 3);  }
+inline u8 puncture_00101011(u8 input) { return (input >> 2) | puncture_00001010(input >> 2); }
+inline u8 puncture_00101100(u8 input) { return (input & 0x3) | ((input & 0x10) >> 2) | ((input & 0xc0) >> 3); }
+inline u8 puncture_00101101(u8 input) { return (input >> 1) | puncture_00010110(input >> 1); }
+inline u8 puncture_00101110(u8 input) { return (input & 0x1) | ((input & 0x10) >> 3) | ((input & 0xc0) >> 4); }
+inline u8 puncture_00101111(u8 input) { return (input >> 4) | puncture_00000010(input >> 4); }
+inline u8 puncture_00110000(u8 input) { return (input & 0xf) | ((input & 0xc0) >> 2); }
+inline u8 puncture_00110001(u8 input) { return (input >> 1) | puncture_00011000(input >> 1); }
+inline u8 puncture_00110010(u8 input) { return (input & 0x1) | ((input & 0xc) >> 1) | ((input & 0xc0) >> 3); }
+inline u8 puncture_00110011(u8 input) { return (input >> 2) | puncture_00001100(input >> 2); }
+inline u8 puncture_00110100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0xc0) >> 3); }
+inline u8 puncture_00110101(u8 input) { return (input >> 1) | puncture_00011010(input >> 1); }
+inline u8 puncture_00110110(u8 input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0xc0) >> 4); }
+inline u8 puncture_00110111(u8 input) { return (input >> 3) | puncture_00000110(input >> 3); }
+inline u8 puncture_00111000(u8 input) { return (input & 0x7) | ((input & 0xc0) >> 3); }
+inline u8 puncture_00111001(u8 input) { return (input >> 1) | puncture_00011100(input >> 1); }
+inline u8 puncture_00111010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0xc0) >> 4); }
+inline u8 puncture_00111011(u8 input) { return (input >> 2) | puncture_00001110(input >> 2); }
+inline u8 puncture_00111100(u8 input) { return (input & 0x3) | ((input & 0xc0) >> 4); }
+inline u8 puncture_00111101(u8 input) { return (input >> 1) | puncture_00011110(input >> 1); }
+inline u8 puncture_00111110(u8 input) { return (input & 0x1) | ((input & 0xc0) >> 5); }
+inline u8 puncture_00111111(u8 input) { return (input>>6);  }
+inline u8 puncture_01000000(u8 input) { return ((input & 0x80) >> 1) | (input & 0x3f); }
+inline u8 puncture_01000001(u8 input) { return (input >> 1) | puncture_00100000(input >> 1); }
+inline u8 puncture_01000010(u8 input) { return (input & 0x1) | ((input & 0x3c) >> 1) | ((input & 0x80) >> 2); }
+inline u8 puncture_01000011(u8 input) { return (input >> 2) | puncture_00010000(input >> 2); }
+inline u8 puncture_01000100(u8 input) { return (input & 0x3) | ((input & 0x38) >> 1) | ((input & 0x80) >> 2); }
+inline u8 puncture_01000101(u8 input) { return (input >> 1) | puncture_00100010(input >> 1); }
+inline u8 puncture_01000110(u8 input) { return (input & 0x1) | ((input & 0x38) >> 2) | ((input & 0x80) >> 3); }
+inline u8 puncture_01000111(u8 input) { return (input >> 3) | puncture_00001000(input >> 3); }
+inline u8 puncture_01001000(u8 input) { return (input & 0x7) | ((input & 0x30) >> 1) | ((input & 0x80) >> 2); }
+inline u8 puncture_01001001(u8 input) { return (input >> 1) | puncture_00100100(input >> 1); }
+inline u8 puncture_01001010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x30) >> 2) | ((input & 0x80) >> 3); }
+inline u8 puncture_01001011(u8 input) { return (input >> 2) | puncture_00010010(input >> 2); }
+inline u8 puncture_01001100(u8 input) { return (input & 0x3) | ((input & 0x30) >> 2) | ((input & 0x80) >> 3); }
+inline u8 puncture_01001101(u8 input) { return (input >> 1) | puncture_00100110(input >> 1); }
+inline u8 puncture_01001110(u8 input) { return (input & 0x1) | ((input & 0x30) >> 3) | ((input & 0x80) >> 4); }
+inline u8 puncture_01001111(u8 input) { return (input >> 4) | puncture_00000100(input >> 4); }
+inline u8 puncture_01010000(u8 input) { return (input & 0xf) | ((input & 0x20) >> 1) | ((input & 0x80) >> 2); }
+inline u8 puncture_01010001(u8 input) { return (input >> 1) | puncture_00101000(input >> 1); }
+inline u8 puncture_01010010(u8 input) { return (input & 0x1) | ((input & 0xc) >> 1) | ((input & 0x20) >> 2) | ((input & 0x80) >> 3); }
+inline u8 puncture_01010011(u8 input) { return (input >> 2) | puncture_00010100(input >> 2); }
+inline u8 puncture_01010100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x20) >> 2) | ((input & 0x80) >> 3); }
+inline u8 puncture_01010101(u8 input) { return (input >> 1) | puncture_00101010(input >> 1); }
+inline u8 puncture_01010110(u8 input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0x20) >> 3) | ((input & 0x80) >> 4); }
+inline u8 puncture_01010111(u8 input) { return (input >> 3) | puncture_00001010(input >> 3); }
+inline u8 puncture_01011000(u8 input) { return (input & 0x7) | ((input & 0x20) >> 2) | ((input & 0x80) >> 3); }
+inline u8 puncture_01011001(u8 input) { return (input >> 1) | puncture_00101100(input >> 1); }
+inline u8 puncture_01011010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x20) >> 3) | ((input & 0x80) >> 4); }
+inline u8 puncture_01011011(u8 input) { return (input >> 2) | puncture_00010110(input >> 2); }
+inline u8 puncture_01011100(u8 input) { return (input & 0x3) | ((input & 0x20) >> 3) | ((input & 0x80) >> 4); }
+inline u8 puncture_01011101(u8 input) { return (input >> 1) | puncture_00101110(input >> 1); }
+inline u8 puncture_01011110(u8 input) { return (input & 0x1) | ((input & 0x20) >> 4) | ((input & 0x80) >> 5); }
+inline u8 puncture_01011111(u8 input) { return (input >> 5) | puncture_00000010(input >> 5); }
+inline u8 puncture_01100000(u8 input) { return (input & 0x1f) | ((input & 0x80) >> 2); }
+inline u8 puncture_01100001(u8 input) { return (input >> 1) | puncture_00110000(input >> 1); }
+inline u8 puncture_01100010(u8 input) { return (input & 0x1) | ((input & 0x1c) >> 1) | ((input & 0x80) >> 3); }
+inline u8 puncture_01100011(u8 input) { return (input >> 2) | puncture_00011000(input >> 2); }
+inline u8 puncture_01100100(u8 input) { return (input & 0x3) | ((input & 0x18) >> 1) | ((input & 0x80) >> 3); }
+inline u8 puncture_01100101(u8 input) { return (input >> 1) | puncture_00110010(input >> 1); }
+inline u8 puncture_01100110(u8 input) { return (input & 0x1) | ((input & 0x18) >> 2) | ((input & 0x80) >> 4); }
+inline u8 puncture_01100111(u8 input) { return (input >> 3) | puncture_00001100(input >> 3); }
+inline u8 puncture_01101000(u8 input) { return (input & 0x7) | ((input & 0x10) >> 1) | ((input & 0x80) >> 3); }
+inline u8 puncture_01101001(u8 input) { return (input >> 1) | puncture_00110100(input >> 1); }
+inline u8 puncture_01101010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x10) >> 2) | ((input & 0x80) >> 4); }
+inline u8 puncture_01101011(u8 input) { return (input >> 2) | puncture_00011010(input >> 2); }
+inline u8 puncture_01101100(u8 input) { return (input & 0x3) | ((input & 0x10) >> 2) | ((input & 0x80) >> 4); }
+inline u8 puncture_01101101(u8 input) { return (input >> 1) | puncture_00110110(input >> 1); }
+inline u8 puncture_01101110(u8 input) { return (input & 0x1) | ((input & 0x10) >> 3) | ((input & 0x80) >> 5); }
+inline u8 puncture_01101111(u8 input) { return (input >> 4) | puncture_00000110(input >> 4); }
+inline u8 puncture_01110000(u8 input) { return (input & 0xf) | ((input & 0x80) >> 3); }
+inline u8 puncture_01110001(u8 input) { return (input >> 1) | puncture_00111000(input >> 1); }
+inline u8 puncture_01110010(u8 input) { return (input & 0x1) | ((input & 0xc) >> 1) | ((input & 0x80) >> 4); }
+inline u8 puncture_01110011(u8 input) { return (input >> 2) | puncture_00011100(input >> 2); }
+inline u8 puncture_01110100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x80) >> 4); }
+inline u8 puncture_01110101(u8 input) { return (input >> 1) | puncture_00111010(input >> 1); }
+inline u8 puncture_01110110(u8 input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0x80) >> 5); }
+inline u8 puncture_01110111(u8 input) { return (input >> 3) | puncture_00001110(input >> 3); }
+inline u8 puncture_01111000(u8 input) { return (input & 0x7) | ((input & 0x80) >> 4); }
+inline u8 puncture_01111001(u8 input) { return (input >> 1) | puncture_00111100(input >> 1); }
+inline u8 puncture_01111010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x80) >> 5); }
+inline u8 puncture_01111011(u8 input) { return (input >> 2) | puncture_00011110(input >> 2); }
+inline u8 puncture_01111100(u8 input) { return (input & 0x3) | ((input & 0x80) >> 5); }
+inline u8 puncture_01111101(u8 input) { return (input >> 1) | puncture_00111110(input >> 1); }
+inline u8 puncture_01111110(u8 input) { return (input & 0x1) | ((input & 0x80) >> 6); }
+inline u8 puncture_01111111(u8 input) { return (input>>7);  }
+inline u8 puncture_10000000(u8 input) { return (input & 0x7f);  }
+inline u8 puncture_10000001(u8 input) { return (input >> 1) | puncture_01000000(input >> 1); }
+inline u8 puncture_10000010(u8 input) { return (input & 0x1) | ((input & 0x7c) >> 1); }
+inline u8 puncture_10000011(u8 input) { return (input >> 2) | puncture_00100000(input >> 2); }
+inline u8 puncture_10000100(u8 input) { return (input & 0x3) | ((input & 0x78) >> 1) ; }
+inline u8 puncture_10000101(u8 input) { return (input >> 1) | puncture_01000010(input >> 1); }
+inline u8 puncture_10000110(u8 input) { return (input & 0x1) | ((input & 0x78) >> 2); }
+inline u8 puncture_10000111(u8 input) { return (input >> 3) | puncture_00010000(input >> 3); }
+inline u8 puncture_10001000(u8 input) { return (input & 0x7) | ((input & 0x70) >> 1) ; }
+inline u8 puncture_10001001(u8 input) { return (input >> 1) | puncture_01000100(input >> 1); }
+inline u8 puncture_10001010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x70) >> 2); }
+inline u8 puncture_10001011(u8 input) { return (input >> 2) | puncture_00100010(input >> 2); }
+inline u8 puncture_10001100(u8 input) { return (input & 0x3) | ((input & 0x70) >> 2) ; }
+inline u8 puncture_10001101(u8 input) { return (input >> 1) | puncture_01000110(input >> 1); }
+inline u8 puncture_10001110(u8 input) { return (input & 0x1) | ((input & 0x70) >> 3); }
+inline u8 puncture_10001111(u8 input) { return (input >> 4) | puncture_00001000(input >> 4); }
+inline u8 puncture_10010000(u8 input) { return (input & 0xf) | ((input & 0x60) >> 1) ; }
+inline u8 puncture_10010001(u8 input) { return (input >> 1) | puncture_01001000(input >> 1); }
+inline u8 puncture_10010010(u8 input) { return (input & 0x1) | ((input & 0xc0) >> 1) | ((input & 0x60) >> 2); }
+inline u8 puncture_10010011(u8 input) { return (input >> 2) | puncture_00100100(input >> 2); }
+inline u8 puncture_10010100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x60) >> 2) ; }
+inline u8 puncture_10010101(u8 input) { return (input >> 1) | puncture_01001010(input >> 1); }
+inline u8 puncture_10010110(u8 input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0x60) >> 3); }
+inline u8 puncture_10010111(u8 input) { return (input >> 3) | puncture_00010010(input >> 3); }
+inline u8 puncture_10011000(u8 input) { return (input & 0x7) | ((input & 0x60) >> 2) ; }
+inline u8 puncture_10011001(u8 input) { return (input >> 1) | puncture_01001100(input >> 1); }
+inline u8 puncture_10011010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x60) >> 3); }
+inline u8 puncture_10011011(u8 input) { return (input >> 2) | puncture_00100110(input >> 2); }
+inline u8 puncture_10011100(u8 input) { return (input & 0x3) | ((input & 0x60) >> 3) ; }
+inline u8 puncture_10011101(u8 input) { return (input >> 1) | puncture_01001110(input >> 1); }
+inline u8 puncture_10011110(u8 input) { return (input & 0x1) | ((input & 0x60) >> 4); }
+inline u8 puncture_10011111(u8 input) { return (input >> 5) | puncture_00000100(input >> 5); }
+inline u8 puncture_10100000(u8 input) { return (input & 0x1f) | ((input & 0x40) >> 1); }
+inline u8 puncture_10100001(u8 input) { return (input >> 1) | puncture_01010000(input >> 1); }
+inline u8 puncture_10100010(u8 input) { return (input & 0x1) | ((input & 0x1c) >> 1) | ((input & 0x40) >> 2); }
+inline u8 puncture_10100011(u8 input) { return (input >> 2) | puncture_00101000(input >> 2); }
+inline u8 puncture_10100100(u8 input) { return (input & 0x3) | ((input & 0x18) >> 1) | ((input & 0x40) >> 2) ; }
+inline u8 puncture_10100101(u8 input) { return (input >> 1) | puncture_01010010(input >> 1); }
+inline u8 puncture_10100110(u8 input) { return (input & 0x1) | ((input & 0x18) >> 2) | ((input & 0x40) >> 3); }
+inline u8 puncture_10100111(u8 input) { return (input >> 3) | puncture_00010100(input >> 3); }
+inline u8 puncture_10101000(u8 input) { return (input & 0x7) | ((input & 0x10) >> 1) | ((input & 0x40) >> 2) ; }
+inline u8 puncture_10101001(u8 input) { return (input >> 1) | puncture_01010100(input >> 1); }
+inline u8 puncture_10101010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x10) >> 2) | ((input & 0x40) >> 3); }
+inline u8 puncture_10101011(u8 input) { return (input >> 2) | puncture_00101010(input >> 2); }
+inline u8 puncture_10101100(u8 input) { return (input & 0x3) | ((input & 0x10) >> 2) | ((input & 0x40) >> 3) ; }
+inline u8 puncture_10101101(u8 input) { return (input >> 1) | puncture_01010110(input >> 1); }
+inline u8 puncture_10101110(u8 input) { return (input & 0x1) | ((input & 0x10) >> 3) | ((input & 0x40) >> 4); }
+inline u8 puncture_10101111(u8 input) { return (input >> 4) | puncture_00001010(input >> 4); }
+inline u8 puncture_10110000(u8 input) { return (input & 0xf) | ((input & 0x40) >> 2) ; }
+inline u8 puncture_10110001(u8 input) { return (input >> 1) | puncture_01011000(input >> 1); }
+inline u8 puncture_10110010(u8 input) { return (input & 0x1) | ((input & 0xc) >> 1) | ((input & 0x40) >> 3); }
+inline u8 puncture_10110011(u8 input) { return (input >> 2) | puncture_00101100(input >> 2); }
+inline u8 puncture_10110100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x40) >> 3) ; }
+inline u8 puncture_10110101(u8 input) { return (input >> 1) | puncture_01011010(input >> 1); }
+inline u8 puncture_10110110(u8 input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0x40) >> 4); }
+inline u8 puncture_10110111(u8 input) { return (input >> 3) | puncture_00010110(input >> 3); }
+inline u8 puncture_10111000(u8 input) { return (input & 0x7) | ((input & 0x40) >> 3) ; }
+inline u8 puncture_10111001(u8 input) { return (input >> 1) | puncture_01011100(input >> 1); }
+inline u8 puncture_10111010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x40) >> 4); }
+inline u8 puncture_10111011(u8 input) { return (input >> 2) | puncture_00101110(input >> 2); }
+inline u8 puncture_10111100(u8 input) { return (input & 0x3) | ((input & 0x40) >> 4) ; }
+inline u8 puncture_10111101(u8 input) { return (input >> 1) | puncture_01011110(input >> 1); }
+inline u8 puncture_10111110(u8 input) { return (input & 0x1) | ((input & 0x40) >> 5); }
+inline u8 puncture_10111111(u8 input) { return (input >> 6) | puncture_00000010(input >> 6); }
+inline u8 puncture_11000000(u8 input) { return (input & 0x3f);  }
+inline u8 puncture_11000001(u8 input) { return (input >> 1) | puncture_01100000(input >> 1); }
+inline u8 puncture_11000010(u8 input) { return (input & 0x1) | ((input & 0x3c) >> 1) ; }
+inline u8 puncture_11000011(u8 input) { return (input >> 2) | puncture_00110000(input >> 2); }
+inline u8 puncture_11000100(u8 input) { return (input & 0x3) | ((input & 0x38) >> 1) ; }
+inline u8 puncture_11000101(u8 input) { return (input >> 1) | puncture_01100010(input >> 1); }
+inline u8 puncture_11000110(u8 input) { return (input & 0x1) | ((input & 0x38) >> 2) ; }
+inline u8 puncture_11000111(u8 input) { return (input >> 3) | puncture_00011000(input >> 3); }
+inline u8 puncture_11001000(u8 input) { return (input & 0x7) | ((input & 0x3) >> 1) ; }
+inline u8 puncture_11001001(u8 input) { return (input >> 1) | puncture_01100100(input >> 1); }
+inline u8 puncture_11001010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x30) >> 2); }
+inline u8 puncture_11001011(u8 input) { return (input >> 2) | puncture_00110010(input >> 2); }
+inline u8 puncture_11001100(u8 input) { return (input & 0x3) | ((input & 0x30) >> 2) ; }
+inline u8 puncture_11001101(u8 input) { return (input >> 1) | puncture_01100110(input >> 1); }
+inline u8 puncture_11001110(u8 input) { return (input & 0x1) | ((input & 0x30) >> 3); }
+inline u8 puncture_11001111(u8 input) { return (input >> 4) | puncture_00001100(input >> 4); }
+inline u8 puncture_11010000(u8 input) { return (input & 0xf) | ((input & 0x20) >> 1) ; }
+inline u8 puncture_11010001(u8 input) { return (input >> 1) | puncture_01101000(input >> 1); }
+inline u8 puncture_11010010(u8 input) { return (input & 0x1) | ((input & 0xc) >> 1) | ((input & 0x20) >> 2); }
+inline u8 puncture_11010011(u8 input) { return (input >> 2) | puncture_00110100(input >> 2); }
+inline u8 puncture_11010100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x20) >> 2) ; }
+inline u8 puncture_11010101(u8 input) { return (input >> 1) | puncture_01101010(input >> 1); }
+inline u8 puncture_11010110(u8 input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0x20) >> 3); }
+inline u8 puncture_11010111(u8 input) { return (input >> 3) | puncture_00011010(input >> 3); }
+inline u8 puncture_11011000(u8 input) { return (input & 0x7) | ((input & 0x20) >> 2) ; }
+inline u8 puncture_11011001(u8 input) { return (input >> 1) | puncture_01101100(input >> 1); }
+inline u8 puncture_11011010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x20) >> 3); }
+inline u8 puncture_11011011(u8 input) { return (input >> 2) | puncture_00110110(input >> 2); }
+inline u8 puncture_11011100(u8 input) { return (input & 0x3) | ((input & 0x20) >> 3) ; }
+inline u8 puncture_11011101(u8 input) { return (input >> 1) | puncture_01101110(input >> 1); }
+inline u8 puncture_11011110(u8 input) { return (input & 0x1) | ((input & 0x20) >> 4); }
+inline u8 puncture_11011111(u8 input) { return (input >> 5) | puncture_00000110(input >> 5); }
+inline u8 puncture_11100000(u8 input) { return (input & 0x1f);  }
+inline u8 puncture_11100001(u8 input) { return (input >> 1) | puncture_01110000(input >> 1); }
+inline u8 puncture_11100010(u8 input) { return (input & 0x1) | ((input & 0x1c) >> 1) ; }
+inline u8 puncture_11100011(u8 input) { return (input >> 2) | puncture_00111000(input >> 2); }
+inline u8 puncture_11100100(u8 input) { return (input & 0x3) | ((input & 0x18) >> 1) ; }
+inline u8 puncture_11100101(u8 input) { return (input >> 1) | puncture_01110010(input >> 1); }
+inline u8 puncture_11100110(u8 input) { return (input & 0x1) | ((input & 0x18) >> 2) ; }
+inline u8 puncture_11100111(u8 input) { return (input >> 3) | puncture_00011100(input >> 3); }
+inline u8 puncture_11101000(u8 input) { return (input & 0x7) | ((input & 0x10) >> 1) ; }
+inline u8 puncture_11101001(u8 input) { return (input >> 1) | puncture_01110100(input >> 1); }
+inline u8 puncture_11101010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x10) >> 2); }
+inline u8 puncture_11101011(u8 input) { return (input >> 2) | puncture_00111010(input >> 2); }
+inline u8 puncture_11101100(u8 input) { return (input & 0x3) | ((input & 0x10) >> 2) ; }
+inline u8 puncture_11101101(u8 input) { return (input >> 1) | puncture_01110110(input >> 1); }
+inline u8 puncture_11101110(u8 input) { return (input & 0x1) | ((input & 0x10) >> 3); }
+inline u8 puncture_11101111(u8 input) { return (input >> 4) | puncture_00001110(input >> 4); }
+inline u8 puncture_11110000(u8 input) { return (input & 0xf);  }
+inline u8 puncture_11110001(u8 input) { return (input >> 1) | puncture_01111000(input >> 1); }
+inline u8 puncture_11110010(u8 input) { return (input & 0x1) | ((input & 0xc) >> 1) ; }
+inline u8 puncture_11110011(u8 input) { return (input >> 2) | puncture_00111100(input >> 2); }
+inline u8 puncture_11110100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) ; }
+inline u8 puncture_11110101(u8 input) { return (input >> 1) | puncture_01111010(input >> 1); }
+inline u8 puncture_11110110(u8 input) { return (input & 0x1) | ((input & 0x8) >> 2) ; }
+inline u8 puncture_11110111(u8 input) { return (input >> 3) | puncture_00011110(input >> 3); }
+inline u8 puncture_11111000(u8 input) { return (input & 0x7);  }
+inline u8 puncture_11111001(u8 input) { return (input >> 1) | puncture_01111100(input >> 1); }
+inline u8 puncture_11111010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) ; }
+inline u8 puncture_11111011(u8 input) { return (input >> 2) | puncture_00111110(input >> 2); }
+inline u8 puncture_11111100(u8 input) { return (input & 0x3);  }
+inline u8 puncture_11111101(u8 input) { return (input >> 1) | puncture_01111110(input >> 1); }
+inline u8 puncture_11111110(u8 input) { return (input & 0x1);  }
+inline u8 puncture_11111111(u8 input) { return 0;  }
 
 
 
@@ -531,12 +537,12 @@ const puncture_func g_puncture_funcs[256] = {
 // 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 
 // 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 
 // 
-// after 2b puncture per byte (2 bits in each byte are punctured according to the above O(1) punc functions):
+// after 2b puncture per u8 (2 bits in each u8 are punctured according to the above O(1) punc functions):
 // ==========================================================================================================
 // 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 
 // 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 0x3F 
 //
-// after byte condensing:
+// after u8 condensing:
 // ======================
 // 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 
 // 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 0x0F 0xFF 
@@ -546,17 +552,17 @@ const puncture_func g_puncture_funcs[256] = {
 // 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 
 // 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 0xFFFF 
 //
-// after 2b puncture per byte (2 bits in each byte are punctured according to the above O(1) punc functions):
+// after 2b puncture per u8 (2 bits in each u8 are punctured according to the above O(1) punc functions):
 // ==========================================================================================================
 // 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 
 // 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 0x3F3F 
 //
-// after byte condensing:
+// after u8 condensing:
 // ======================
 // 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 
 // 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 0x0FFF 
 //
-// after word condensing:
+// after u16 condensing:
 // ======================
 // 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 
 // 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 0x00FF 0xFFFF 
@@ -566,17 +572,17 @@ const puncture_func g_puncture_funcs[256] = {
 // 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 
 // 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 0xFFFFFFFF 
 //
-// after 2b puncture per byte (2 bits in each byte are punctured according to the above O(1) punc functions):
+// after 2b puncture per u8 (2 bits in each u8 are punctured according to the above O(1) punc functions):
 // ==========================================================================================================
 // 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 
 // 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 0x3F3F3F3F 
 //
-// after byte condensing:
+// after u8 condensing:
 // ======================
 // 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 
 // 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 0x0FFF0FFF 
 //
-// after word condensing:
+// after u16 condensing:
 // ======================
 // 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 
 // 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 0x00FFFFFF 
@@ -591,17 +597,17 @@ const puncture_func g_puncture_funcs[256] = {
 // 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 
 // 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF 
 //
-// after 2b puncture per byte (2 bits in each byte are punctured according to the above O(1) punc functions):
+// after 2b puncture per u8 (2 bits in each u8 are punctured according to the above O(1) punc functions):
 // ==========================================================================================================
 // 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 
 // 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F 
 //
-// after byte condensing:
+// after u8 condensing:
 // ======================
 // 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 
 // 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF 
 //
-// after word condensing:
+// after u16 condensing:
 // ======================
 // 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 
 // 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF 
@@ -621,17 +627,17 @@ const puncture_func g_puncture_funcs[256] = {
 // 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
 // 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
 //
-// after 2b puncture per byte (2 bits in each byte are punctured according to the above O(1) punc functions):
+// after 2b puncture per u8 (2 bits in each u8 are punctured according to the above O(1) punc functions):
 // ==========================================================================================================
 // 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F 
 // 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F 
 //
-// after byte condensing:
+// after u8 condensing:
 // ==========================================================================================================
 // 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 
 // 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 
 //
-// after word condensing:
+// after u16 condensing:
 // ======================
 // 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF 
 // 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF 
@@ -656,17 +662,17 @@ const puncture_func g_puncture_funcs[256] = {
 // 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
 // 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
 //
-// after 2b puncture per byte (2 bits in each byte are punctured according to the above O(1) punc functions):
+// after 2b puncture per u8 (2 bits in each u8 are punctured according to the above O(1) punc functions):
 // ==========================================================================================================
 // 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F
 // 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F 
 //
-// after byte condensing:
+// after u8 condensing:
 // ======================
 // 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 
 // 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 
 //
-// after word condensing:
+// after u16 condensing:
 // ======================
 // 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF 
 // 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF 
@@ -696,17 +702,17 @@ const puncture_func g_puncture_funcs[256] = {
 // 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
 // 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
 //
-// after 2b puncture per byte (2 bits in each byte are punctured according to the above O(1) punc functions):
+// after 2b puncture per u8 (2 bits in each u8 are punctured according to the above O(1) punc functions):
 // ==========================================================================================================
 // 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F
 // 0x3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F3F 
 //
-// after byte condensing:
+// after u8 condensing:
 // ======================
 // 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 
 // 0x0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF0FFF 
 //
-// after word condensing:
+// after u16 condensing:
 // ======================
 // 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF 
 // 0x00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF 
@@ -737,87 +743,98 @@ const puncture_func g_puncture_funcs[256] = {
 // 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
 
 
-void build_data(unsigned char* input_data, int input_data_len) {
+void build_data(u8* input_data, u16 input_data_len) {
     memset(input_data, 0xFF, input_data_len);
 }
 
-int build_structures(const int* punc_bits_indices, int puncture_bits_len, int* punc_bytes_list, unsigned char* bytes_punctures_list, unsigned char* bytes_num_punctures) {
-    int curr_pbyte_index = -1;
-    int num_pbytes = 0;
+u16 build_structures(const u16* punc_bits_indices, u16 puncture_bits_len, u16* punc_bytes_list, u8* bytes_punctures_list, u8* bytes_num_punctures) {
+    u16 curr_pbyte_index = -1;
+    u16 num_pbytes = 0;
 
-    for (int pbit_index = 0; pbit_index < puncture_bits_len; pbit_index++) { // Go over the puncturing bits indices
-        int pbyte_index = punc_bits_indices[pbit_index] >> 3;
-        if (pbyte_index != curr_pbyte_index) { // if new byte index (to be punctured) encountered
-            curr_pbyte_index = pbyte_index;            // update current punctured byte
-            punc_bytes_list[num_pbytes] = pbyte_index; // Add current byte to the punctured bytes list
+    for (u16 pbit_index = 0; pbit_index < puncture_bits_len; pbit_index++) { // Go over the puncturing bits indices
+        u16 pbyte_index = punc_bits_indices[pbit_index] >> 3;
+        if (pbyte_index != curr_pbyte_index) { // if new u8 index (to be punctured) encountered
+            curr_pbyte_index = pbyte_index;            // update current punctured u8
+            punc_bytes_list[num_pbytes] = pbyte_index; // Add current u8 to the punctured bytes list
             num_pbytes++;                              // inc number of punctured bytes
         }
-        bytes_punctures_list[num_pbytes-1] |= (1 << (punc_bits_indices[pbit_index] % 8)); // update bit in byte
-        bytes_num_punctures[num_pbytes-1]++;                                              // increase number of punctured bits in punctured byte
+        bytes_punctures_list[num_pbytes-1] |= (1 << (punc_bits_indices[pbit_index] % 8)); // update bit in u8
+        bytes_num_punctures[num_pbytes-1]++;                                              // increase number of punctured bits in punctured u8
     }
 
     return num_pbytes;
 }
 
-void puncture_data(unsigned char* input_data, int num_punc_bytes, int* punc_bytes_list, unsigned char* bytes_punctures_list) {
-    for (int byte_index = 0; byte_index < num_punc_bytes; byte_index++)
+void puncture_data(u8* input_data, u16 num_punc_bytes, u16* punc_bytes_list, u8* bytes_punctures_list) {
+    for (u16 byte_index = 0; byte_index < num_punc_bytes; byte_index++)
         input_data[punc_bytes_list[byte_index]] = g_puncture_funcs[bytes_punctures_list[byte_index]](input_data[punc_bytes_list[byte_index]]);
 }
 
 
-void print_as_bytes(unsigned char* data, int data_len, const char* name, bool reverse) {
-    std::cout << name << " As Hex Bytes " << (reverse? "reverse" : "") << ": \n\n";
+void print_as_bytes(u8* data, u16 data_len, const char* name, bool reverse) {
+    std::cout << name << " As Hex u8 " << (reverse? "reverse" : "") << ": \n\n";
 
     if (reverse)
-        for (int i = data_len-1; i >= 0; i--)
-            printf("%02x ", data[i]);
+        for (data_len; data_len > 0; data_len--)
+            printf("%02x ", data[data_len-1]);
     else
-        for (int i = 0; i < data_len; i++)
+        for (u16 i = 0; i < data_len; i++)
             printf("%02x ", data[i]);
     std::cout << std::endl << std::endl;
 }
 
-void print_as_ints(int* data, int data_len, const char* name, bool reverse) {
-    std::cout << name << " As Hex Ints " << (reverse ? "reverse" : "") << ": \n\n";
+void print_as_words(u16* data, u16 data_len, const char* name, bool reverse) {
+    std::cout << name << " As Hex u16 " << (reverse ? "reverse" : "") << ": \n\n";
 
     if (reverse)
-        for (int i = data_len-1; i >= 0; i--)
-            printf("%08x ", data[i]);
+        for (data_len; data_len > 0; data_len--)
+            printf("%04x ", data[data_len-1]);
     else
-        for (int i = 0; i < data_len; i++)
-            printf("%08x ", data[i]);
+        for (u16 i = 0; i < data_len; i++)
+            printf("%04x ", data[i]);
     std::cout << std::endl << std::endl;
 }
 
-void condense_even_byte_pairs(unsigned char* data, int* p_bytes, int num_punctured_bytes, unsigned char* p_bytes_num_puncs) {    
-    int punctured_byte_index = 0;
+u16 condense_even_byte_pairs(u8* data, u16* p_bytes, u16 num_punctured_bytes, u8* p_bytes_num_puncs, u16* p_words, u8* p_words_num_puncs) {
+    u16 punctured_byte_index = 0;    
+    u16 num_punctured_words = 0;
     
-    // Work in even index pairs: if punctured byte index in data is even, 
-    // look at this byte (punctured) and next byte (might be punctured)
+    // Work in even index pairs: if punctured u8 index in data is even, 
+    // look at this u8 (punctured) and next u8 (might be punctured)
     while (punctured_byte_index < num_punctured_bytes) {
-        int byte_index_in_data = p_bytes[punctured_byte_index];
+        u16 byte_index_in_data = p_bytes[punctured_byte_index];
+        u16 word_index_in_data = byte_index_in_data >> 1;
+        u16 num_curr_byte_puncs = p_bytes_num_puncs[punctured_byte_index];
+        u16 num_next_byte_puncs;
 
-        if ((byte_index_in_data & 0x1) == 0) {
-            int num_curr_byte_puncs = p_bytes_num_puncs[punctured_byte_index];
-            int num_next_byte_puncs =
-                (byte_index_in_data + 1 == p_bytes[punctured_byte_index + 1]) ? p_bytes_num_puncs[punctured_byte_index + 1] : 0; // next byte in data contains punctures?
+        if ((byte_index_in_data & 0x1) == 0) {            
+            num_next_byte_puncs =
+                (byte_index_in_data + 1 == p_bytes[punctured_byte_index + 1]) ? p_bytes_num_puncs[punctured_byte_index + 1] : 0; // next u8 in data contains punctures?
 
-            // Condense byte pair:
+            // Condense u8 pair:
             data[byte_index_in_data] |=
                 ((data[byte_index_in_data + 1] & ((1 << num_curr_byte_puncs) - 1)) << (8 - num_curr_byte_puncs));
             data[byte_index_in_data + 1] >>= num_curr_byte_puncs;
 
-            if (num_next_byte_puncs) { // there were punctures in next byte
+            if (num_next_byte_puncs) { // there were punctures in next u8
                 p_bytes_num_puncs[punctured_byte_index + 1] += num_curr_byte_puncs;
-                p_bytes_num_puncs[punctured_byte_index] = 0; // All punctures reflected in next byte
+                p_bytes_num_puncs[punctured_byte_index] = 0; // All punctures reflected in next u8
                 punctured_byte_index += 2;
             }
-            else
+            else {
                 punctured_byte_index++;
+            }
         }
-        else
+        else {
             punctured_byte_index++;
+            num_next_byte_puncs = 0;
+        }
+
+        p_words_num_puncs[num_punctured_words] = num_curr_byte_puncs + num_next_byte_puncs;
+        p_words[num_punctured_words] = word_index_in_data;
+        num_punctured_words++;
     }
+    return num_punctured_words;
 }
 
 int main(int argc, char** argv)
@@ -826,39 +843,42 @@ int main(int argc, char** argv)
     #define INPUT_SIZE_BYTES (INPUT_SIZE_BITS/8 + 1)
     #define P_SIZE 18
 
-    unsigned char * data = (unsigned char*)_aligned_malloc(INPUT_SIZE_BYTES, 512);
+    u8 * data = (u8*)_aligned_malloc(INPUT_SIZE_BYTES, 512);
 
     _ASSERT((((unsigned long long)data) % 512 == 0));
 
-    //                      byte     0  1   2            4      6       16 ...
+    //                    u8         0  1   3            4      6       16 ...
     //                           0 1 2  3   4   5  6  7  8   9 10   11  12   13   14   15   16   17 
-    const int p_bits[P_SIZE] = { 1,2,4, 8, 22, 33,34,35,37, 50,51, 128,129, 140, 150, 160, 170, 200 };
+    const u16 p_bits[P_SIZE] = { 1,2,4, 8, 30, 33,34,35,37, 50,51, 128,129, 140, 150, 160, 170, 200 };
 
-    int p_bytes[P_SIZE] = { 0 };                     // bytes corresponding to p_bits
-    unsigned char p_bytes_punctures[P_SIZE] = { 0 }; // puncturing mask per byte (1: puncture, 0: no puncture)
-    unsigned char p_bytes_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per byte
+    u16 p_bytes[P_SIZE] = { 0 };                     // bytes corresponding to p_bits
+    u8 p_bytes_punctures[P_SIZE] = { 0 }; // puncturing mask per u8 (1: puncture, 0: no puncture)
+    u8 p_bytes_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per u8
 
-    int p_words[P_SIZE] = { 0 };                     // bytes corresponding to p_bits
-    unsigned char p_words_punctures[P_SIZE] = { 0 }; // puncturing mask per byte (1: puncture, 0: no puncture)
-    unsigned char p_words_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per byte
+    u16 p_words[P_SIZE] = { 0 };                     // bytes corresponding to p_bits
+    u8 p_words_punctures[P_SIZE] = { 0 }; // puncturing mask per u8 (1: puncture, 0: no puncture)
+    u8 p_words_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per u8
 
     build_data(data, INPUT_SIZE_BYTES); // Fill the input data (with all ones)
     
     // num_punctured_bytes: number of bytes in which there are punctures (len(p_bytes) == len(p_bytes_punctures) == len(p_bytes_num_puncs)
-    int num_punctured_bytes = build_structures(p_bits, P_SIZE, p_bytes, p_bytes_punctures, p_bytes_num_puncs);
+    u16 num_punctured_bytes = build_structures(p_bits, P_SIZE, p_bytes, p_bytes_punctures, p_bytes_num_puncs);
     puncture_data(data, num_punctured_bytes, p_bytes, p_bytes_punctures);
-    
-    print_as_bytes(p_bytes_punctures, num_punctured_bytes, "p_bytes_punctures", true);
-    print_as_bytes(p_bytes_num_puncs, num_punctured_bytes, "p_bytes_num_puncs", true);
-
-    print_as_ints((int*)p_bits, P_SIZE, "p_bits", true);
-    print_as_ints(p_bytes, num_punctured_bytes, "p_bytes", true);
+        
+    print_as_words((u16*)p_bits, P_SIZE, "p_bits", true);
 
     print_as_bytes(data, INPUT_SIZE_BYTES, "data", true);
+    print_as_words(p_bytes, num_punctured_bytes, "p_bytes", true);
+    print_as_bytes(p_bytes_num_puncs, num_punctured_bytes, "p_bytes_num_puncs", true);
+    print_as_bytes(p_bytes_punctures, num_punctured_bytes, "p_bytes_punctures", true);
 
-    condense_even_byte_pairs(data, p_bytes, num_punctured_bytes, p_bytes_num_puncs); // Condense according to example above
+    u16 num_punctured_words = condense_even_byte_pairs(data, p_bytes, num_punctured_bytes, p_bytes_num_puncs, p_words, p_words_num_puncs); // Condense according to example above
 
     print_as_bytes(data, INPUT_SIZE_BYTES, "data after condense_even_byte_pairs()", true);
+    print_as_bytes(p_bytes_num_puncs, num_punctured_bytes, "p_bytes_num_puncs after condense_even_byte_pairs()", true);
+
+    print_as_words(p_words, num_punctured_words, "p_words after condense_even_byte_pairs()", true);
+    print_as_bytes(p_words_num_puncs, num_punctured_words, "p_words_num_puncs after condense_even_byte_pairs()", true);
 
     _aligned_free(data);
 }
