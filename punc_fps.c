@@ -765,22 +765,60 @@ void puncture_data(unsigned char* input_data, int num_punc_bytes, int* punc_byte
 }
 
 
-void print_as_bytes(unsigned char* data, int data_len, const char* name) {
-    std::cout << name << " As Hex Bytes : \n\n";
+void print_as_bytes(unsigned char* data, int data_len, const char* name, bool reverse) {
+    std::cout << name << " As Hex Bytes " << (reverse? "reverse" : "") << ": \n\n";
 
-    for (int i = 0; i < data_len; i++)
-        printf("%02x ", data[i]);
+    if (reverse)
+        for (int i = data_len-1; i >= 0; i--)
+            printf("%02x ", data[i]);
+    else
+        for (int i = 0; i < data_len; i++)
+            printf("%02x ", data[i]);
     std::cout << std::endl << std::endl;
 }
 
-void print_as_ints(int* data, int data_len, const char* name) {
-    std::cout << name << " As Hex Ints : \n\n";
+void print_as_ints(int* data, int data_len, const char* name, bool reverse) {
+    std::cout << name << " As Hex Ints " << (reverse ? "reverse" : "") << ": \n\n";
 
-    for (int i = 0; i < data_len; i++)
-        printf("%08x ", data[i]);
+    if (reverse)
+        for (int i = data_len-1; i >= 0; i--)
+            printf("%08x ", data[i]);
+    else
+        for (int i = 0; i < data_len; i++)
+            printf("%08x ", data[i]);
     std::cout << std::endl << std::endl;
 }
 
+void condense_even_byte_pairs(unsigned char* data, int* p_bytes, int num_punctured_bytes, unsigned char* p_bytes_num_puncs) {    
+    int punctured_byte_index = 0;
+    
+    // Work in even index pairs: if punctured byte index in data is even, 
+    // look at this byte (punctured) and next byte (might be punctured)
+    while (punctured_byte_index < num_punctured_bytes) {
+        int byte_index_in_data = p_bytes[punctured_byte_index];
+
+        if ((byte_index_in_data & 0x1) == 0) {
+            int num_curr_byte_puncs = p_bytes_num_puncs[punctured_byte_index];
+            int num_next_byte_puncs =
+                (byte_index_in_data + 1 == p_bytes[punctured_byte_index + 1]) ? p_bytes_num_puncs[punctured_byte_index + 1] : 0; // next byte in data contains punctures?
+
+            // Condense byte pair:
+            data[byte_index_in_data] |=
+                ((data[byte_index_in_data + 1] & ((1 << num_curr_byte_puncs) - 1)) << (8 - num_curr_byte_puncs));
+            data[byte_index_in_data + 1] >>= num_curr_byte_puncs;
+
+            if (num_next_byte_puncs) { // there were punctures in next byte
+                p_bytes_num_puncs[punctured_byte_index + 1] += num_curr_byte_puncs;
+                p_bytes_num_puncs[punctured_byte_index] = 0; // All punctures reflected in next byte
+                punctured_byte_index += 2;
+            }
+            else
+                punctured_byte_index++;
+        }
+        else
+            punctured_byte_index++;
+    }
+}
 
 int main(int argc, char** argv)
 {
@@ -803,12 +841,15 @@ int main(int argc, char** argv)
     int num_punctured_bytes = build_structures(p_bits, P_SIZE, p_bytes, p_bytes_punctures, p_bytes_num_puncs);
     puncture_data(data, num_punctured_bytes, p_bytes, p_bytes_punctures);
     
-    print_as_bytes(data, INPUT_SIZE_BYTES, "data");
-    print_as_bytes(p_bytes_punctures, num_punctured_bytes, "p_bytes_punctures");
-    print_as_bytes(p_bytes_num_puncs, num_punctured_bytes, "p_bytes_num_puncs");
+    print_as_bytes(p_bytes_punctures, num_punctured_bytes, "p_bytes_punctures", true);
+    print_as_bytes(p_bytes_num_puncs, num_punctured_bytes, "p_bytes_num_puncs", true);
 
-    print_as_ints((int*)p_bits, P_SIZE, "p_bits");
-    print_as_ints(p_bytes, num_punctured_bytes, "p_bytes");
+    print_as_ints((int*)p_bits, P_SIZE, "p_bits", true);
+    print_as_ints(p_bytes, num_punctured_bytes, "p_bytes", true);
 
-    // condense_bytes(); // Condense according to example above
+    print_as_bytes(data, INPUT_SIZE_BYTES, "data", true);
+
+    condense_even_byte_pairs(data, p_bytes, num_punctured_bytes, p_bytes_num_puncs); // Condense according to example above
+
+    print_as_bytes(data, INPUT_SIZE_BYTES, "data after condense_even_byte_pairs()", true);
 }
