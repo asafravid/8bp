@@ -868,8 +868,8 @@ u16 condense_even_word_pairs(u16* data, u16* p_words, u16 num_punctured_words, u
     u16 punctured_word_index = 0;
     u16 num_punctured_dwords = 0;
 
-    // Work in even index pairs: if punctured u8 index in data is even, 
-    // look at this u8 (punctured) and next u8 (might be punctured)
+    // Work in even index pairs: if punctured index in data is even, 
+    // look at this (punctured) and next (might be punctured)
     while (punctured_word_index < num_punctured_words) {
         u16 word_index_in_data = p_words[punctured_word_index];
         u16 dword_index_in_data = word_index_in_data >> 1;
@@ -878,16 +878,16 @@ u16 condense_even_word_pairs(u16* data, u16* p_words, u16 num_punctured_words, u
 
         if ((word_index_in_data & 0x1) == 0) {
             num_next_word_puncs =
-                (word_index_in_data + 1 == p_words[punctured_word_index + 1]) ? p_words_num_puncs[punctured_word_index + 1] : 0; // next u16 in data contains punctures?
+                (word_index_in_data + 1 == p_words[punctured_word_index + 1]) ? p_words_num_puncs[punctured_word_index + 1] : 0; // next element in data contains punctures?
 
-            // Condense u16 pair:
+            // Condense pair:
             data[word_index_in_data] |=
                 ((data[word_index_in_data + 1] & ((1 << num_curr_word_puncs) - 1)) << (16 - num_curr_word_puncs));
             data[word_index_in_data + 1] >>= num_curr_word_puncs;
 
-            if (num_next_word_puncs) { // there were punctures in next u16
+            if (num_next_word_puncs) { // there were punctures in next element
                 p_words_num_puncs[punctured_word_index + 1] += num_curr_word_puncs;
-                p_words_num_puncs[punctured_word_index] = 0; // All punctures reflected in next u16
+                p_words_num_puncs[punctured_word_index] = 0; // All punctures reflected in next element
                 punctured_word_index += 2;
             }
             else {
@@ -904,6 +904,48 @@ u16 condense_even_word_pairs(u16* data, u16* p_words, u16 num_punctured_words, u
         num_punctured_dwords++;
     }
     return num_punctured_dwords;
+}
+
+u16 condense_even_dword_pairs(u32* data, u16* p_dwords, u16 num_punctured_dwords, u8* p_dwords_num_puncs, u16* p_u64s, u8* p_u64s_num_puncs) {
+    u16 punctured_dword_index = 0;
+    u16 num_punctured_u64s = 0;
+
+    // Work in even index pairs: if punctured index in data is even, 
+    // look at this (punctured) and next (might be punctured)
+    while (punctured_dword_index < num_punctured_dwords) {
+        u16 dword_index_in_data = p_dwords[punctured_dword_index];
+        u16 u64_index_in_data = dword_index_in_data >> 1;
+        u16 num_curr_dword_puncs = p_dwords_num_puncs[punctured_dword_index];
+        u16 num_next_dword_puncs;
+
+        if ((dword_index_in_data & 0x1) == 0) {
+            num_next_dword_puncs =
+                (dword_index_in_data + 1 == p_dwords[punctured_dword_index + 1]) ? p_dwords_num_puncs[punctured_dword_index + 1] : 0; // next element in data contains punctures?
+
+            // Condense pair:
+            data[dword_index_in_data] |=
+                ((data[dword_index_in_data + 1] & ((1 << num_curr_dword_puncs) - 1)) << (32 - num_curr_dword_puncs));
+            data[dword_index_in_data + 1] >>= num_curr_dword_puncs;
+
+            if (num_next_dword_puncs) { // there were punctures in next element
+                p_dwords_num_puncs[punctured_dword_index + 1] += num_curr_dword_puncs;
+                p_dwords_num_puncs[punctured_dword_index] = 0; // All punctures reflected in next element
+                punctured_dword_index += 2;
+            }
+            else {
+                punctured_dword_index++;
+            }
+        }
+        else {
+            punctured_dword_index++;
+            num_next_dword_puncs = 0;
+        }
+
+        p_u64s_num_puncs[num_punctured_u64s] = num_curr_dword_puncs + num_next_dword_puncs;
+        p_u64s[num_punctured_u64s] = u64_index_in_data;
+        num_punctured_u64s++;
+    }
+    return num_punctured_u64s;
 }
 
 
@@ -931,6 +973,9 @@ int main(int argc, char** argv)
 
     u16 p_dwords[P_SIZE] = { 0 };          // dwords corresponding to p_bits
     u8 p_dwords_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per u32
+
+    u16 p_u64s[P_SIZE] = { 0 };            // u64s corresponding to p_bits
+    u8 p_u64s_num_puncs[P_SIZE] = { 0 };   // number of punctured bits per u64
 
     build_data(data, INPUT_SIZE_BYTES); // Fill the input data (with all ones)
 
@@ -961,6 +1006,13 @@ int main(int argc, char** argv)
     print_as_words(p_dwords, num_punctured_dwords, "p_dwords after condense_even_word_pairs()", true);
     print_as_bytes(p_dwords_num_puncs, num_punctured_dwords, "p_dwords_num_puncs after condense_even_word_pairs()", true);
 
+    u16 num_punctured_u64s = condense_even_dword_pairs((u32*)data, p_dwords, num_punctured_dwords, p_dwords_num_puncs, p_u64s, p_u64s_num_puncs); // Condense according to example above
+
+    print_as_dwords((u32*)data, INPUT_SIZE_BYTES>>2, "data dwords after condense_even_dword_pairs()", true);
+    print_as_bytes(p_dwords_num_puncs, num_punctured_dwords, "p_dwords_num_puncs after condense_even_dword_pairs()", true);
+
+    print_as_words(p_u64s, num_punctured_u64s, "p_u64s after condense_even_dword_pairs()", true);
+    print_as_bytes(p_u64s_num_puncs, num_punctured_u64s, "p_u64s_num_puncs after condense_even_dword_pairs()", true);
 
     _aligned_free(data);
 }

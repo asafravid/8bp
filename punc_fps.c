@@ -2,6 +2,21 @@
 //
 
 #include <iostream>
+#include <stdio.h>
+#include <cstring>
+#include <cassert>
+
+#ifndef _aligned_malloc
+ #define _aligned_malloc aligned_alloc
+#endif
+
+#ifndef _aligned_free
+ #define _aligned_free free
+#endif
+
+#ifndef _ASSERT
+ #define _ASSERT assert
+#endif
 
 typedef unsigned char      u8;  // 8b
 typedef unsigned short     u16; // 16b
@@ -772,7 +787,7 @@ void puncture_data(u8* input_data, u16 num_punc_bytes, u16* punc_bytes_list, u8*
 
 
 void print_as_bytes(u8* data, u16 data_len, const char* name, bool reverse) {
-    std::cout << name << " As Hex u8 " << (reverse? "reverse" : "") << ": \n\n";
+    printf("%s As Hex u8 %s:\n\n", name, (reverse? "reverse" : ""));
 
     if (reverse)
         for (data_len; data_len > 0; data_len--)
@@ -780,11 +795,11 @@ void print_as_bytes(u8* data, u16 data_len, const char* name, bool reverse) {
     else
         for (u16 i = 0; i < data_len; i++)
             printf("%02x ", data[i]);
-    std::cout << std::endl << std::endl;
+    printf("\n\n");
 }
 
 void print_as_words(u16* data, u16 data_len, const char* name, bool reverse) {
-    std::cout << name << " As Hex u16 " << (reverse ? "reverse" : "") << ": \n\n";
+    printf("%s As Hex u16 %s:\n\n", name, (reverse ? "reverse" : ""));
 
     if (reverse)
         for (data_len; data_len > 0; data_len--)
@@ -792,11 +807,11 @@ void print_as_words(u16* data, u16 data_len, const char* name, bool reverse) {
     else
         for (u16 i = 0; i < data_len; i++)
             printf("%04x ", data[i]);
-    std::cout << std::endl << std::endl;
+    printf("\n\n");
 }
 
 void print_as_dwords(u32* data, u16 data_len, const char* name, bool reverse) {
-    std::cout << name << " As Hex u32 " << (reverse ? "reverse" : "") << ": \n\n";
+    printf("%s As Hex u32 %s:\n\n", name, (reverse ? "reverse" : ""));
 
     if (reverse)
         for (data_len; data_len > 0; data_len--)
@@ -804,7 +819,7 @@ void print_as_dwords(u32* data, u16 data_len, const char* name, bool reverse) {
     else
         for (u16 i = 0; i < data_len; i++)
             printf("%08x ", data[i]);
-    std::cout << std::endl << std::endl;
+    printf("\n\n");
 }
 
 u16 condense_even_byte_pairs(u8* data, u16* p_bytes, u16 num_punctured_bytes, u8* p_bytes_num_puncs, u16* p_words, u8* p_words_num_puncs) {
@@ -853,8 +868,8 @@ u16 condense_even_word_pairs(u16* data, u16* p_words, u16 num_punctured_words, u
     u16 punctured_word_index = 0;
     u16 num_punctured_dwords = 0;
 
-    // Work in even index pairs: if punctured u8 index in data is even, 
-    // look at this u8 (punctured) and next u8 (might be punctured)
+    // Work in even index pairs: if punctured index in data is even, 
+    // look at this (punctured) and next (might be punctured)
     while (punctured_word_index < num_punctured_words) {
         u16 word_index_in_data = p_words[punctured_word_index];
         u16 dword_index_in_data = word_index_in_data >> 1;
@@ -863,16 +878,16 @@ u16 condense_even_word_pairs(u16* data, u16* p_words, u16 num_punctured_words, u
 
         if ((word_index_in_data & 0x1) == 0) {
             num_next_word_puncs =
-                (word_index_in_data + 1 == p_words[punctured_word_index + 1]) ? p_words_num_puncs[punctured_word_index + 1] : 0; // next u16 in data contains punctures?
+                (word_index_in_data + 1 == p_words[punctured_word_index + 1]) ? p_words_num_puncs[punctured_word_index + 1] : 0; // next element in data contains punctures?
 
-            // Condense u16 pair:
+            // Condense pair:
             data[word_index_in_data] |=
                 ((data[word_index_in_data + 1] & ((1 << num_curr_word_puncs) - 1)) << (16 - num_curr_word_puncs));
             data[word_index_in_data + 1] >>= num_curr_word_puncs;
 
-            if (num_next_word_puncs) { // there were punctures in next u16
+            if (num_next_word_puncs) { // there were punctures in next element
                 p_words_num_puncs[punctured_word_index + 1] += num_curr_word_puncs;
-                p_words_num_puncs[punctured_word_index] = 0; // All punctures reflected in next u16
+                p_words_num_puncs[punctured_word_index] = 0; // All punctures reflected in next element
                 punctured_word_index += 2;
             }
             else {
@@ -891,6 +906,48 @@ u16 condense_even_word_pairs(u16* data, u16* p_words, u16 num_punctured_words, u
     return num_punctured_dwords;
 }
 
+u16 condense_even_dword_pairs(u32* data, u16* p_dwords, u16 num_punctured_dwords, u8* p_dwords_num_puncs, u16* p_u64s, u8* p_u64s_num_puncs) {
+    u16 punctured_dword_index = 0;
+    u16 num_punctured_u64s = 0;
+
+    // Work in even index pairs: if punctured index in data is even, 
+    // look at this (punctured) and next (might be punctured)
+    while (punctured_dword_index < num_punctured_dwords) {
+        u16 dword_index_in_data = p_dwords[punctured_dword_index];
+        u16 u64_index_in_data = dword_index_in_data >> 1;
+        u16 num_curr_dword_puncs = p_dwords_num_puncs[punctured_dword_index];
+        u16 num_next_dword_puncs;
+
+        if ((dword_index_in_data & 0x1) == 0) {
+            num_next_dword_puncs =
+                (dword_index_in_data + 1 == p_dwords[punctured_dword_index + 1]) ? p_dwords_num_puncs[punctured_dword_index + 1] : 0; // next element in data contains punctures?
+
+            // Condense pair:
+            data[dword_index_in_data] |=
+                ((data[dword_index_in_data + 1] & ((1 << num_curr_dword_puncs) - 1)) << (32 - num_curr_dword_puncs));
+            data[dword_index_in_data + 1] >>= num_curr_dword_puncs;
+
+            if (num_next_dword_puncs) { // there were punctures in next element
+                p_dwords_num_puncs[punctured_dword_index + 1] += num_curr_dword_puncs;
+                p_dwords_num_puncs[punctured_dword_index] = 0; // All punctures reflected in next element
+                punctured_dword_index += 2;
+            }
+            else {
+                punctured_dword_index++;
+            }
+        }
+        else {
+            punctured_dword_index++;
+            num_next_dword_puncs = 0;
+        }
+
+        p_u64s_num_puncs[num_punctured_u64s] = num_curr_dword_puncs + num_next_dword_puncs;
+        p_u64s[num_punctured_u64s] = u64_index_in_data;
+        num_punctured_u64s++;
+    }
+    return num_punctured_u64s;
+}
+
 
 int main(int argc, char** argv)
 {
@@ -900,7 +957,8 @@ int main(int argc, char** argv)
 
     u8 * data = (u8*)_aligned_malloc(INPUT_SIZE_BYTES, 512);
 
-    _ASSERT((((unsigned long long)data) % 512 == 0));
+    printf("data = %p\n", data);
+    _ASSERT((((unsigned long long)data) % 256 == 0));
 
     //                    u8         0  1   3            4      6       16 ...
     //                           0 1 2  3   4   5  6  7  8   9 10   11  12   13   14   15   16   17 
@@ -912,16 +970,19 @@ int main(int argc, char** argv)
 
     u16 p_words[P_SIZE] = { 0 };          // words corresponding to p_bits
     u8 p_words_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per u16
-    
+
     u16 p_dwords[P_SIZE] = { 0 };          // dwords corresponding to p_bits
     u8 p_dwords_num_puncs[P_SIZE] = { 0 }; // number of punctured bits per u32
 
+    u16 p_u64s[P_SIZE] = { 0 };            // u64s corresponding to p_bits
+    u8 p_u64s_num_puncs[P_SIZE] = { 0 };   // number of punctured bits per u64
+
     build_data(data, INPUT_SIZE_BYTES); // Fill the input data (with all ones)
-    
+
     // num_punctured_bytes: number of bytes in which there are punctures (len(p_bytes) == len(p_bytes_punctures) == len(p_bytes_num_puncs)
     u16 num_punctured_bytes = build_structures(p_bits, P_SIZE, p_bytes, p_bytes_punctures, p_bytes_num_puncs);
     puncture_data(data, num_punctured_bytes, p_bytes, p_bytes_punctures);
-        
+
     print_as_words((u16*)p_bits, P_SIZE, "p_bits", true);
 
     print_as_bytes(data, INPUT_SIZE_BYTES, "data", true);
@@ -945,6 +1006,13 @@ int main(int argc, char** argv)
     print_as_words(p_dwords, num_punctured_dwords, "p_dwords after condense_even_word_pairs()", true);
     print_as_bytes(p_dwords_num_puncs, num_punctured_dwords, "p_dwords_num_puncs after condense_even_word_pairs()", true);
 
+    u16 num_punctured_u64s = condense_even_dword_pairs((u32*)data, p_dwords, num_punctured_dwords, p_dwords_num_puncs, p_u64s, p_u64s_num_puncs); // Condense according to example above
+
+    print_as_dwords((u32*)data, INPUT_SIZE_BYTES>>2, "data dwords after condense_even_dword_pairs()", true);
+    print_as_bytes(p_dwords_num_puncs, num_punctured_dwords, "p_dwords_num_puncs after condense_even_dword_pairs()", true);
+
+    print_as_words(p_u64s, num_punctured_u64s, "p_u64s after condense_even_dword_pairs()", true);
+    print_as_bytes(p_u64s_num_puncs, num_punctured_u64s, "p_u64s_num_puncs after condense_even_dword_pairs()", true);
 
     _aligned_free(data);
 }
