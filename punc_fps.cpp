@@ -6,15 +6,15 @@
 #include <cstring>
 #include <cassert>
 
-#define MODE LINUX_BUILD // || WIN64_BUILD
+#define ___BUILD_MODE_LINUX // Comment out for MSVC (Visual Studio etc)
 
-#if (MODE == LINUX_BUILD)
- #define _aligned_malloc aligned_alloc
- #define _aligned_free free
+#ifdef ___BUILD_MODE_LINUX
+#define _aligned_malloc aligned_alloc
+#define _aligned_free free
 #endif
 
 #ifndef _ASSERT
- #define _ASSERT assert
+#define _ASSERT assert
 #endif
 
 typedef unsigned char      u8;  // 8b
@@ -22,52 +22,52 @@ typedef unsigned short     u16; // 16b
 typedef unsigned int       u32; // 32b
 typedef unsigned long long u64; // 64b
 
-typedef u8 (*puncture_func)(u8 input);
+typedef u8(*puncture_func)(u8 input);
 
 
-inline u8 puncture_00000000(u8 input) { return (input   ); }
-inline u8 puncture_00000001(u8 input) { return (input>>1);  }
-inline u8 puncture_00000010(u8 input) { return ((input & 0xfc) >> 1) | (input & 0x1);  }
-inline u8 puncture_00000011(u8 input) { return (input>>2);  }
+inline u8 puncture_00000000(u8 input) { return (input); }
+inline u8 puncture_00000001(u8 input) { return (input >> 1); }
+inline u8 puncture_00000010(u8 input) { return ((input & 0xfc) >> 1) | (input & 0x1); }
+inline u8 puncture_00000011(u8 input) { return (input >> 2); }
 inline u8 puncture_00000100(u8 input) { return ((input & 0xf8) >> 1) | (input & 0x3); }
 inline u8 puncture_00000101(u8 input) { return (input >> 1) | puncture_00000010(input >> 1); }
-inline u8 puncture_00000110(u8 input) { return (input & 0x1) | ((input & 0xf8) >> 2);  }
-inline u8 puncture_00000111(u8 input) { return input>>3;  }
+inline u8 puncture_00000110(u8 input) { return (input & 0x1) | ((input & 0xf8) >> 2); }
+inline u8 puncture_00000111(u8 input) { return input >> 3; }
 inline u8 puncture_00001000(u8 input) { return ((input & 0xf0) >> 1) | (input & 0x7); }
 inline u8 puncture_00001001(u8 input) { return (input >> 1) | puncture_00000100(input >> 1); }
 inline u8 puncture_00001010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0xf0) >> 2); }
-inline u8 puncture_00001011(u8 input) { return (input>>2) | puncture_00000010(input >> 2); }
+inline u8 puncture_00001011(u8 input) { return (input >> 2) | puncture_00000010(input >> 2); }
 inline u8 puncture_00001100(u8 input) { return (input & 0x3) | ((input & 0xf0) >> 2); }
-inline u8 puncture_00001101(u8 input) { return (input >> 1) | puncture_00000110(input >> 1);}
-inline u8 puncture_00001110(u8 input) { return (input & 0x1) | ((input & 0xf0) >> 3);  }
-inline u8 puncture_00001111(u8 input) { return (input>>4);  }
+inline u8 puncture_00001101(u8 input) { return (input >> 1) | puncture_00000110(input >> 1); }
+inline u8 puncture_00001110(u8 input) { return (input & 0x1) | ((input & 0xf0) >> 3); }
+inline u8 puncture_00001111(u8 input) { return (input >> 4); }
 inline u8 puncture_00010000(u8 input) { return ((input & 0xe0) >> 1) | (input & 0xf); }
 inline u8 puncture_00010001(u8 input) { return (input >> 1) | puncture_00001000(input >> 1); }
-inline u8 puncture_00010010(u8 input) { return (input & 0x1) | ((input & 0xc)>>1) | ((input & 0xe0) >> 2);  }
-inline u8 puncture_00010011(u8 input) { return (input>>2) | puncture_00000100(input >> 2); }
+inline u8 puncture_00010010(u8 input) { return (input & 0x1) | ((input & 0xc) >> 1) | ((input & 0xe0) >> 2); }
+inline u8 puncture_00010011(u8 input) { return (input >> 2) | puncture_00000100(input >> 2); }
 inline u8 puncture_00010100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0xe0) >> 2); }
-inline u8 puncture_00010101(u8 input) { return (input>>1) | puncture_00001010(input >> 1); }
-inline u8 puncture_00010110(u8 input) { return (input & 0x1) | ((input & 0x8)>>2) | ((input & 0xe0) >> 3);  }
+inline u8 puncture_00010101(u8 input) { return (input >> 1) | puncture_00001010(input >> 1); }
+inline u8 puncture_00010110(u8 input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0xe0) >> 3); }
 inline u8 puncture_00010111(u8 input) { return (input >> 3) | puncture_00000010(input >> 3); }
 inline u8 puncture_00011000(u8 input) { return (input & 0x7) | ((input & 0xe0) >> 2); }
 inline u8 puncture_00011001(u8 input) { return (input >> 1) | puncture_00001100(input >> 1); }
-inline u8 puncture_00011010(u8 input) { return (input & 0x1) | ((input & 0x4)>>1) | ((input & 0xe0) >> 3);  }
+inline u8 puncture_00011010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0xe0) >> 3); }
 inline u8 puncture_00011011(u8 input) { return (input >> 2) | puncture_00000110(input >> 2); }
 inline u8 puncture_00011100(u8 input) { return (input & 0x3) | ((input & 0xe0) >> 3); }
 inline u8 puncture_00011101(u8 input) { return (input >> 1) | puncture_00001110(input >> 1); }
-inline u8 puncture_00011110(u8 input) { return (input & 0x1) | ((input & 0xe0) >> 4);  }
-inline u8 puncture_00011111(u8 input) { return (input>>5);  }
+inline u8 puncture_00011110(u8 input) { return (input & 0x1) | ((input & 0xe0) >> 4); }
+inline u8 puncture_00011111(u8 input) { return (input >> 5); }
 inline u8 puncture_00100000(u8 input) { return ((input & 0xc0) >> 1) | (input & 0x1f); }
 inline u8 puncture_00100001(u8 input) { return (input >> 1) | puncture_00010000(input >> 1); }
-inline u8 puncture_00100010(u8 input) { return (input & 0x1) | ((input & 0x1c)>>1) | ((input & 0xc0) >> 2);  }
+inline u8 puncture_00100010(u8 input) { return (input & 0x1) | ((input & 0x1c) >> 1) | ((input & 0xc0) >> 2); }
 inline u8 puncture_00100011(u8 input) { return (input >> 2) | puncture_00001000(input >> 2); }
 inline u8 puncture_00100100(u8 input) { return (input & 0x3) | ((input & 0x18) >> 1) | ((input & 0xc0) >> 2); }
 inline u8 puncture_00100101(u8 input) { return (input >> 1) | puncture_00010010(input >> 1); }
-inline u8 puncture_00100110(u8 input) { return (input & 0x1) | ((input & 0x18) >> 2) | ((input & 0xc0) >> 3);  }
+inline u8 puncture_00100110(u8 input) { return (input & 0x1) | ((input & 0x18) >> 2) | ((input & 0xc0) >> 3); }
 inline u8 puncture_00100111(u8 input) { return (input >> 3) | puncture_00000100(input >> 3); }
 inline u8 puncture_00101000(u8 input) { return (input & 0x7) | ((input & 0x10) >> 1) | ((input & 0xc0) >> 2); }
 inline u8 puncture_00101001(u8 input) { return (input >> 1) | puncture_00010100(input >> 1); }
-inline u8 puncture_00101010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x10) >> 2) | ((input & 0xc0) >> 3);  }
+inline u8 puncture_00101010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x10) >> 2) | ((input & 0xc0) >> 3); }
 inline u8 puncture_00101011(u8 input) { return (input >> 2) | puncture_00001010(input >> 2); }
 inline u8 puncture_00101100(u8 input) { return (input & 0x3) | ((input & 0x10) >> 2) | ((input & 0xc0) >> 3); }
 inline u8 puncture_00101101(u8 input) { return (input >> 1) | puncture_00010110(input >> 1); }
@@ -88,7 +88,7 @@ inline u8 puncture_00111011(u8 input) { return (input >> 2) | puncture_00001110(
 inline u8 puncture_00111100(u8 input) { return (input & 0x3) | ((input & 0xc0) >> 4); }
 inline u8 puncture_00111101(u8 input) { return (input >> 1) | puncture_00011110(input >> 1); }
 inline u8 puncture_00111110(u8 input) { return (input & 0x1) | ((input & 0xc0) >> 5); }
-inline u8 puncture_00111111(u8 input) { return (input>>6);  }
+inline u8 puncture_00111111(u8 input) { return (input >> 6); }
 inline u8 puncture_01000000(u8 input) { return ((input & 0x80) >> 1) | (input & 0x3f); }
 inline u8 puncture_01000001(u8 input) { return (input >> 1) | puncture_00100000(input >> 1); }
 inline u8 puncture_01000010(u8 input) { return (input & 0x1) | ((input & 0x3c) >> 1) | ((input & 0x80) >> 2); }
@@ -152,36 +152,36 @@ inline u8 puncture_01111011(u8 input) { return (input >> 2) | puncture_00011110(
 inline u8 puncture_01111100(u8 input) { return (input & 0x3) | ((input & 0x80) >> 5); }
 inline u8 puncture_01111101(u8 input) { return (input >> 1) | puncture_00111110(input >> 1); }
 inline u8 puncture_01111110(u8 input) { return (input & 0x1) | ((input & 0x80) >> 6); }
-inline u8 puncture_01111111(u8 input) { return (input>>7);  }
-inline u8 puncture_10000000(u8 input) { return (input & 0x7f);  }
+inline u8 puncture_01111111(u8 input) { return (input >> 7); }
+inline u8 puncture_10000000(u8 input) { return (input & 0x7f); }
 inline u8 puncture_10000001(u8 input) { return (input >> 1) | puncture_01000000(input >> 1); }
 inline u8 puncture_10000010(u8 input) { return (input & 0x1) | ((input & 0x7c) >> 1); }
 inline u8 puncture_10000011(u8 input) { return (input >> 2) | puncture_00100000(input >> 2); }
-inline u8 puncture_10000100(u8 input) { return (input & 0x3) | ((input & 0x78) >> 1) ; }
+inline u8 puncture_10000100(u8 input) { return (input & 0x3) | ((input & 0x78) >> 1); }
 inline u8 puncture_10000101(u8 input) { return (input >> 1) | puncture_01000010(input >> 1); }
 inline u8 puncture_10000110(u8 input) { return (input & 0x1) | ((input & 0x78) >> 2); }
 inline u8 puncture_10000111(u8 input) { return (input >> 3) | puncture_00010000(input >> 3); }
-inline u8 puncture_10001000(u8 input) { return (input & 0x7) | ((input & 0x70) >> 1) ; }
+inline u8 puncture_10001000(u8 input) { return (input & 0x7) | ((input & 0x70) >> 1); }
 inline u8 puncture_10001001(u8 input) { return (input >> 1) | puncture_01000100(input >> 1); }
 inline u8 puncture_10001010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x70) >> 2); }
 inline u8 puncture_10001011(u8 input) { return (input >> 2) | puncture_00100010(input >> 2); }
-inline u8 puncture_10001100(u8 input) { return (input & 0x3) | ((input & 0x70) >> 2) ; }
+inline u8 puncture_10001100(u8 input) { return (input & 0x3) | ((input & 0x70) >> 2); }
 inline u8 puncture_10001101(u8 input) { return (input >> 1) | puncture_01000110(input >> 1); }
 inline u8 puncture_10001110(u8 input) { return (input & 0x1) | ((input & 0x70) >> 3); }
 inline u8 puncture_10001111(u8 input) { return (input >> 4) | puncture_00001000(input >> 4); }
-inline u8 puncture_10010000(u8 input) { return (input & 0xf) | ((input & 0x60) >> 1) ; }
+inline u8 puncture_10010000(u8 input) { return (input & 0xf) | ((input & 0x60) >> 1); }
 inline u8 puncture_10010001(u8 input) { return (input >> 1) | puncture_01001000(input >> 1); }
 inline u8 puncture_10010010(u8 input) { return (input & 0x1) | ((input & 0xc0) >> 1) | ((input & 0x60) >> 2); }
 inline u8 puncture_10010011(u8 input) { return (input >> 2) | puncture_00100100(input >> 2); }
-inline u8 puncture_10010100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x60) >> 2) ; }
+inline u8 puncture_10010100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x60) >> 2); }
 inline u8 puncture_10010101(u8 input) { return (input >> 1) | puncture_01001010(input >> 1); }
 inline u8 puncture_10010110(u8 input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0x60) >> 3); }
 inline u8 puncture_10010111(u8 input) { return (input >> 3) | puncture_00010010(input >> 3); }
-inline u8 puncture_10011000(u8 input) { return (input & 0x7) | ((input & 0x60) >> 2) ; }
+inline u8 puncture_10011000(u8 input) { return (input & 0x7) | ((input & 0x60) >> 2); }
 inline u8 puncture_10011001(u8 input) { return (input >> 1) | puncture_01001100(input >> 1); }
 inline u8 puncture_10011010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x60) >> 3); }
 inline u8 puncture_10011011(u8 input) { return (input >> 2) | puncture_00100110(input >> 2); }
-inline u8 puncture_10011100(u8 input) { return (input & 0x3) | ((input & 0x60) >> 3) ; }
+inline u8 puncture_10011100(u8 input) { return (input & 0x3) | ((input & 0x60) >> 3); }
 inline u8 puncture_10011101(u8 input) { return (input >> 1) | puncture_01001110(input >> 1); }
 inline u8 puncture_10011110(u8 input) { return (input & 0x1) | ((input & 0x60) >> 4); }
 inline u8 puncture_10011111(u8 input) { return (input >> 5) | puncture_00000100(input >> 5); }
@@ -189,98 +189,98 @@ inline u8 puncture_10100000(u8 input) { return (input & 0x1f) | ((input & 0x40) 
 inline u8 puncture_10100001(u8 input) { return (input >> 1) | puncture_01010000(input >> 1); }
 inline u8 puncture_10100010(u8 input) { return (input & 0x1) | ((input & 0x1c) >> 1) | ((input & 0x40) >> 2); }
 inline u8 puncture_10100011(u8 input) { return (input >> 2) | puncture_00101000(input >> 2); }
-inline u8 puncture_10100100(u8 input) { return (input & 0x3) | ((input & 0x18) >> 1) | ((input & 0x40) >> 2) ; }
+inline u8 puncture_10100100(u8 input) { return (input & 0x3) | ((input & 0x18) >> 1) | ((input & 0x40) >> 2); }
 inline u8 puncture_10100101(u8 input) { return (input >> 1) | puncture_01010010(input >> 1); }
 inline u8 puncture_10100110(u8 input) { return (input & 0x1) | ((input & 0x18) >> 2) | ((input & 0x40) >> 3); }
 inline u8 puncture_10100111(u8 input) { return (input >> 3) | puncture_00010100(input >> 3); }
-inline u8 puncture_10101000(u8 input) { return (input & 0x7) | ((input & 0x10) >> 1) | ((input & 0x40) >> 2) ; }
+inline u8 puncture_10101000(u8 input) { return (input & 0x7) | ((input & 0x10) >> 1) | ((input & 0x40) >> 2); }
 inline u8 puncture_10101001(u8 input) { return (input >> 1) | puncture_01010100(input >> 1); }
 inline u8 puncture_10101010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x10) >> 2) | ((input & 0x40) >> 3); }
 inline u8 puncture_10101011(u8 input) { return (input >> 2) | puncture_00101010(input >> 2); }
-inline u8 puncture_10101100(u8 input) { return (input & 0x3) | ((input & 0x10) >> 2) | ((input & 0x40) >> 3) ; }
+inline u8 puncture_10101100(u8 input) { return (input & 0x3) | ((input & 0x10) >> 2) | ((input & 0x40) >> 3); }
 inline u8 puncture_10101101(u8 input) { return (input >> 1) | puncture_01010110(input >> 1); }
 inline u8 puncture_10101110(u8 input) { return (input & 0x1) | ((input & 0x10) >> 3) | ((input & 0x40) >> 4); }
 inline u8 puncture_10101111(u8 input) { return (input >> 4) | puncture_00001010(input >> 4); }
-inline u8 puncture_10110000(u8 input) { return (input & 0xf) | ((input & 0x40) >> 2) ; }
+inline u8 puncture_10110000(u8 input) { return (input & 0xf) | ((input & 0x40) >> 2); }
 inline u8 puncture_10110001(u8 input) { return (input >> 1) | puncture_01011000(input >> 1); }
 inline u8 puncture_10110010(u8 input) { return (input & 0x1) | ((input & 0xc) >> 1) | ((input & 0x40) >> 3); }
 inline u8 puncture_10110011(u8 input) { return (input >> 2) | puncture_00101100(input >> 2); }
-inline u8 puncture_10110100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x40) >> 3) ; }
+inline u8 puncture_10110100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x40) >> 3); }
 inline u8 puncture_10110101(u8 input) { return (input >> 1) | puncture_01011010(input >> 1); }
 inline u8 puncture_10110110(u8 input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0x40) >> 4); }
 inline u8 puncture_10110111(u8 input) { return (input >> 3) | puncture_00010110(input >> 3); }
-inline u8 puncture_10111000(u8 input) { return (input & 0x7) | ((input & 0x40) >> 3) ; }
+inline u8 puncture_10111000(u8 input) { return (input & 0x7) | ((input & 0x40) >> 3); }
 inline u8 puncture_10111001(u8 input) { return (input >> 1) | puncture_01011100(input >> 1); }
 inline u8 puncture_10111010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x40) >> 4); }
 inline u8 puncture_10111011(u8 input) { return (input >> 2) | puncture_00101110(input >> 2); }
-inline u8 puncture_10111100(u8 input) { return (input & 0x3) | ((input & 0x40) >> 4) ; }
+inline u8 puncture_10111100(u8 input) { return (input & 0x3) | ((input & 0x40) >> 4); }
 inline u8 puncture_10111101(u8 input) { return (input >> 1) | puncture_01011110(input >> 1); }
 inline u8 puncture_10111110(u8 input) { return (input & 0x1) | ((input & 0x40) >> 5); }
 inline u8 puncture_10111111(u8 input) { return (input >> 6) | puncture_00000010(input >> 6); }
-inline u8 puncture_11000000(u8 input) { return (input & 0x3f);  }
+inline u8 puncture_11000000(u8 input) { return (input & 0x3f); }
 inline u8 puncture_11000001(u8 input) { return (input >> 1) | puncture_01100000(input >> 1); }
-inline u8 puncture_11000010(u8 input) { return (input & 0x1) | ((input & 0x3c) >> 1) ; }
+inline u8 puncture_11000010(u8 input) { return (input & 0x1) | ((input & 0x3c) >> 1); }
 inline u8 puncture_11000011(u8 input) { return (input >> 2) | puncture_00110000(input >> 2); }
-inline u8 puncture_11000100(u8 input) { return (input & 0x3) | ((input & 0x38) >> 1) ; }
+inline u8 puncture_11000100(u8 input) { return (input & 0x3) | ((input & 0x38) >> 1); }
 inline u8 puncture_11000101(u8 input) { return (input >> 1) | puncture_01100010(input >> 1); }
-inline u8 puncture_11000110(u8 input) { return (input & 0x1) | ((input & 0x38) >> 2) ; }
+inline u8 puncture_11000110(u8 input) { return (input & 0x1) | ((input & 0x38) >> 2); }
 inline u8 puncture_11000111(u8 input) { return (input >> 3) | puncture_00011000(input >> 3); }
-inline u8 puncture_11001000(u8 input) { return (input & 0x7) | ((input & 0x3) >> 1) ; }
+inline u8 puncture_11001000(u8 input) { return (input & 0x7) | ((input & 0x3) >> 1); }
 inline u8 puncture_11001001(u8 input) { return (input >> 1) | puncture_01100100(input >> 1); }
 inline u8 puncture_11001010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x30) >> 2); }
 inline u8 puncture_11001011(u8 input) { return (input >> 2) | puncture_00110010(input >> 2); }
-inline u8 puncture_11001100(u8 input) { return (input & 0x3) | ((input & 0x30) >> 2) ; }
+inline u8 puncture_11001100(u8 input) { return (input & 0x3) | ((input & 0x30) >> 2); }
 inline u8 puncture_11001101(u8 input) { return (input >> 1) | puncture_01100110(input >> 1); }
 inline u8 puncture_11001110(u8 input) { return (input & 0x1) | ((input & 0x30) >> 3); }
 inline u8 puncture_11001111(u8 input) { return (input >> 4) | puncture_00001100(input >> 4); }
-inline u8 puncture_11010000(u8 input) { return (input & 0xf) | ((input & 0x20) >> 1) ; }
+inline u8 puncture_11010000(u8 input) { return (input & 0xf) | ((input & 0x20) >> 1); }
 inline u8 puncture_11010001(u8 input) { return (input >> 1) | puncture_01101000(input >> 1); }
 inline u8 puncture_11010010(u8 input) { return (input & 0x1) | ((input & 0xc) >> 1) | ((input & 0x20) >> 2); }
 inline u8 puncture_11010011(u8 input) { return (input >> 2) | puncture_00110100(input >> 2); }
-inline u8 puncture_11010100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x20) >> 2) ; }
+inline u8 puncture_11010100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) | ((input & 0x20) >> 2); }
 inline u8 puncture_11010101(u8 input) { return (input >> 1) | puncture_01101010(input >> 1); }
 inline u8 puncture_11010110(u8 input) { return (input & 0x1) | ((input & 0x8) >> 2) | ((input & 0x20) >> 3); }
 inline u8 puncture_11010111(u8 input) { return (input >> 3) | puncture_00011010(input >> 3); }
-inline u8 puncture_11011000(u8 input) { return (input & 0x7) | ((input & 0x20) >> 2) ; }
+inline u8 puncture_11011000(u8 input) { return (input & 0x7) | ((input & 0x20) >> 2); }
 inline u8 puncture_11011001(u8 input) { return (input >> 1) | puncture_01101100(input >> 1); }
 inline u8 puncture_11011010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x20) >> 3); }
 inline u8 puncture_11011011(u8 input) { return (input >> 2) | puncture_00110110(input >> 2); }
-inline u8 puncture_11011100(u8 input) { return (input & 0x3) | ((input & 0x20) >> 3) ; }
+inline u8 puncture_11011100(u8 input) { return (input & 0x3) | ((input & 0x20) >> 3); }
 inline u8 puncture_11011101(u8 input) { return (input >> 1) | puncture_01101110(input >> 1); }
 inline u8 puncture_11011110(u8 input) { return (input & 0x1) | ((input & 0x20) >> 4); }
 inline u8 puncture_11011111(u8 input) { return (input >> 5) | puncture_00000110(input >> 5); }
-inline u8 puncture_11100000(u8 input) { return (input & 0x1f);  }
+inline u8 puncture_11100000(u8 input) { return (input & 0x1f); }
 inline u8 puncture_11100001(u8 input) { return (input >> 1) | puncture_01110000(input >> 1); }
-inline u8 puncture_11100010(u8 input) { return (input & 0x1) | ((input & 0x1c) >> 1) ; }
+inline u8 puncture_11100010(u8 input) { return (input & 0x1) | ((input & 0x1c) >> 1); }
 inline u8 puncture_11100011(u8 input) { return (input >> 2) | puncture_00111000(input >> 2); }
-inline u8 puncture_11100100(u8 input) { return (input & 0x3) | ((input & 0x18) >> 1) ; }
+inline u8 puncture_11100100(u8 input) { return (input & 0x3) | ((input & 0x18) >> 1); }
 inline u8 puncture_11100101(u8 input) { return (input >> 1) | puncture_01110010(input >> 1); }
-inline u8 puncture_11100110(u8 input) { return (input & 0x1) | ((input & 0x18) >> 2) ; }
+inline u8 puncture_11100110(u8 input) { return (input & 0x1) | ((input & 0x18) >> 2); }
 inline u8 puncture_11100111(u8 input) { return (input >> 3) | puncture_00011100(input >> 3); }
-inline u8 puncture_11101000(u8 input) { return (input & 0x7) | ((input & 0x10) >> 1) ; }
+inline u8 puncture_11101000(u8 input) { return (input & 0x7) | ((input & 0x10) >> 1); }
 inline u8 puncture_11101001(u8 input) { return (input >> 1) | puncture_01110100(input >> 1); }
 inline u8 puncture_11101010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) | ((input & 0x10) >> 2); }
 inline u8 puncture_11101011(u8 input) { return (input >> 2) | puncture_00111010(input >> 2); }
-inline u8 puncture_11101100(u8 input) { return (input & 0x3) | ((input & 0x10) >> 2) ; }
+inline u8 puncture_11101100(u8 input) { return (input & 0x3) | ((input & 0x10) >> 2); }
 inline u8 puncture_11101101(u8 input) { return (input >> 1) | puncture_01110110(input >> 1); }
 inline u8 puncture_11101110(u8 input) { return (input & 0x1) | ((input & 0x10) >> 3); }
 inline u8 puncture_11101111(u8 input) { return (input >> 4) | puncture_00001110(input >> 4); }
-inline u8 puncture_11110000(u8 input) { return (input & 0xf);  }
+inline u8 puncture_11110000(u8 input) { return (input & 0xf); }
 inline u8 puncture_11110001(u8 input) { return (input >> 1) | puncture_01111000(input >> 1); }
-inline u8 puncture_11110010(u8 input) { return (input & 0x1) | ((input & 0xc) >> 1) ; }
+inline u8 puncture_11110010(u8 input) { return (input & 0x1) | ((input & 0xc) >> 1); }
 inline u8 puncture_11110011(u8 input) { return (input >> 2) | puncture_00111100(input >> 2); }
-inline u8 puncture_11110100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1) ; }
+inline u8 puncture_11110100(u8 input) { return (input & 0x3) | ((input & 0x8) >> 1); }
 inline u8 puncture_11110101(u8 input) { return (input >> 1) | puncture_01111010(input >> 1); }
-inline u8 puncture_11110110(u8 input) { return (input & 0x1) | ((input & 0x8) >> 2) ; }
+inline u8 puncture_11110110(u8 input) { return (input & 0x1) | ((input & 0x8) >> 2); }
 inline u8 puncture_11110111(u8 input) { return (input >> 3) | puncture_00011110(input >> 3); }
-inline u8 puncture_11111000(u8 input) { return (input & 0x7);  }
+inline u8 puncture_11111000(u8 input) { return (input & 0x7); }
 inline u8 puncture_11111001(u8 input) { return (input >> 1) | puncture_01111100(input >> 1); }
-inline u8 puncture_11111010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1) ; }
+inline u8 puncture_11111010(u8 input) { return (input & 0x1) | ((input & 0x4) >> 1); }
 inline u8 puncture_11111011(u8 input) { return (input >> 2) | puncture_00111110(input >> 2); }
-inline u8 puncture_11111100(u8 input) { return (input & 0x3);  }
+inline u8 puncture_11111100(u8 input) { return (input & 0x3); }
 inline u8 puncture_11111101(u8 input) { return (input >> 1) | puncture_01111110(input >> 1); }
-inline u8 puncture_11111110(u8 input) { return (input & 0x1);  }
-inline u8 puncture_11111111(u8 input) { return 0;  }
+inline u8 puncture_11111110(u8 input) { return (input & 0x1); }
+inline u8 puncture_11111111(u8 input) { return 0; }
 
 
 
@@ -772,8 +772,8 @@ u16 build_structures(const u16* punc_bits_indices, u16 puncture_bits_len, u16* p
             punc_bytes_list[num_pbytes] = pbyte_index; // Add current u8 to the punctured bytes list
             num_pbytes++;                              // inc number of punctured bytes
         }
-        bytes_punctures_list[num_pbytes-1] |= (1 << (punc_bits_indices[pbit_index] % 8)); // update bit in u8
-        bytes_num_punctures[num_pbytes-1]++;                                              // increase number of punctured bits in punctured u8
+        bytes_punctures_list[num_pbytes - 1] |= (1 << (punc_bits_indices[pbit_index] % 8)); // update bit in u8
+        bytes_num_punctures[num_pbytes - 1]++;                                              // increase number of punctured bits in punctured u8
     }
 
     return num_pbytes;
@@ -786,11 +786,11 @@ void puncture_data(u8* input_data, u16 num_punc_bytes, u16* punc_bytes_list, u8*
 
 
 void print_as_bytes(u8* data, u16 data_len, const char* name, bool reverse) {
-    printf("%s As Hex u8 %s:\n\n", name, (reverse? "reverse" : ""));
+    printf("%s As Hex u8 %s:\n\n", name, (reverse ? "reverse" : ""));
 
     if (reverse)
         for (data_len; data_len > 0; data_len--)
-            printf("%02x ", data[data_len-1]);
+            printf("%02x ", data[data_len - 1]);
     else
         for (u16 i = 0; i < data_len; i++)
             printf("%02x ", data[i]);
@@ -802,7 +802,7 @@ void print_as_words(u16* data, u16 data_len, const char* name, bool reverse) {
 
     if (reverse)
         for (data_len; data_len > 0; data_len--)
-            printf("%04x ", data[data_len-1]);
+            printf("%04x ", data[data_len - 1]);
     else
         for (u16 i = 0; i < data_len; i++)
             printf("%04x ", data[i]);
@@ -822,9 +822,9 @@ void print_as_dwords(u32* data, u16 data_len, const char* name, bool reverse) {
 }
 
 u16 condense_even_byte_pairs(u8* data, u16* p_bytes, u16 num_punctured_bytes, u8* p_bytes_num_puncs, u16* p_words, u8* p_words_num_puncs) {
-    u16 punctured_byte_index = 0;    
+    u16 punctured_byte_index = 0;
     u16 num_punctured_words = 0;
-    
+
     // Work in even index pairs: if punctured u8 index in data is even, 
     // look at this u8 (punctured) and next u8 (might be punctured)
     while (punctured_byte_index < num_punctured_bytes) {
@@ -833,7 +833,7 @@ u16 condense_even_byte_pairs(u8* data, u16* p_bytes, u16 num_punctured_bytes, u8
         u16 num_curr_byte_puncs = p_bytes_num_puncs[punctured_byte_index];
         u16 num_next_byte_puncs;
 
-        if ((byte_index_in_data & 0x1) == 0) {            
+        if ((byte_index_in_data & 0x1) == 0) {
             num_next_byte_puncs =
                 (byte_index_in_data + 1 == p_bytes[punctured_byte_index + 1]) ? p_bytes_num_puncs[punctured_byte_index + 1] : 0; // next u8 in data contains punctures?
 
@@ -950,11 +950,11 @@ u16 condense_even_dword_pairs(u32* data, u16* p_dwords, u16 num_punctured_dwords
 
 int main(int argc, char** argv)
 {
-    #define INPUT_SIZE_BITS  1500
-    #define INPUT_SIZE_BYTES (INPUT_SIZE_BITS/8 + 1)
-    #define P_SIZE 18
+#define INPUT_SIZE_BITS  1500
+#define INPUT_SIZE_BYTES (INPUT_SIZE_BITS/8 + 1)
+#define P_SIZE 18
 
-    u8 * data = (u8*)_aligned_malloc(INPUT_SIZE_BYTES, 512);
+    u8* data = (u8*)_aligned_malloc(INPUT_SIZE_BYTES, 512);
 
     printf("data = %p\n", data);
     _ASSERT((((unsigned long long)data) % 256 == 0));
@@ -999,7 +999,7 @@ int main(int argc, char** argv)
 
     u16 num_punctured_dwords = condense_even_word_pairs((u16*)data, p_words, num_punctured_words, p_words_num_puncs, p_dwords, p_dwords_num_puncs); // Condense according to example above
 
-    print_as_words((u16*)data, INPUT_SIZE_BYTES>>1, "data words after condense_even_word_pairs()", true);
+    print_as_words((u16*)data, INPUT_SIZE_BYTES >> 1, "data words after condense_even_word_pairs()", true);
     print_as_bytes(p_words_num_puncs, num_punctured_words, "p_words_num_puncs after condense_even_word_pairs()", true);
 
     print_as_words(p_dwords, num_punctured_dwords, "p_dwords after condense_even_word_pairs()", true);
@@ -1007,7 +1007,7 @@ int main(int argc, char** argv)
 
     u16 num_punctured_u64s = condense_even_dword_pairs((u32*)data, p_dwords, num_punctured_dwords, p_dwords_num_puncs, p_u64s, p_u64s_num_puncs); // Condense according to example above
 
-    print_as_dwords((u32*)data, INPUT_SIZE_BYTES>>2, "data dwords after condense_even_dword_pairs()", true);
+    print_as_dwords((u32*)data, INPUT_SIZE_BYTES >> 2, "data dwords after condense_even_dword_pairs()", true);
     print_as_bytes(p_dwords_num_puncs, num_punctured_dwords, "p_dwords_num_puncs after condense_even_dword_pairs()", true);
 
     print_as_words(p_u64s, num_punctured_u64s, "p_u64s after condense_even_dword_pairs()", true);
