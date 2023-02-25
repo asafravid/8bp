@@ -2,7 +2,7 @@
 8 bit Puncture actions using function pointers in C++
 
 ### Build and Run
-`g++ -g -o punc_fps punc_fps.cc -lstdc++`
+`g++ -g -o punc_fps punc_fps.cpp -lstdc++`
 `./punc_fps`
 
 ### Console Output
@@ -59,3 +59,20 @@
     p_dwords_num_puncs after condense_even_word_pairs() As Hex u8 reverse:
     
     01 02 04 06 05 
+
+    data dwords after condense_even_dword_pairs() As Hex u32 reverse:
+    
+    ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff 7fffffff ffffffff 03ffffff ffffffff ffffffff ffffffff 001fffff ffffffff 
+    
+    p_dwords_num_puncs after condense_even_dword_pairs() As Hex u8 reverse:
+    
+    01 06 00 0b 00 
+    
+    p_u64s after condense_even_dword_pairs() As Hex u16 reverse:
+    
+    0003 0002 0000 
+    
+    p_u64s_num_puncs after condense_even_dword_pairs() As Hex u8 reverse:
+    
+    01 06 0b 
+    
