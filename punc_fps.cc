@@ -6,11 +6,8 @@
 #include <cstring>
 #include <cassert>
 
-#ifndef _aligned_malloc
+#if defined(UNIX) && !defined(WIN32)
  #define _aligned_malloc aligned_alloc
-#endif
-
-#ifndef _aligned_free
  #define _aligned_free free
 #endif
 
