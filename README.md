@@ -2,7 +2,7 @@
 8 bit Puncture actions using function pointers in C++
 
 ### Build and Run
-`g++ -g -o punc_fps punc_fps.cpp -lstdc++` && `./punc_fps`
+`g++ -g -o punc_fps punc_fps.cpp -lstdc++ && ./punc_fps`
 
 ### Console Output
 
